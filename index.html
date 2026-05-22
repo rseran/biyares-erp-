@@ -276,6 +276,83 @@ td { padding: 10px 13px; font-size: 13px; }
   .borc-ozet-grid { grid-template-columns: 1fr; }
   .content { padding: 16px; }
 }
+
+/* ===== SİPARİŞ FİŞİ ===== */
+.fis-form-wrap { max-width: 720px; }
+.fis-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px 22px; margin-bottom: 16px; }
+.fis-section-title { font-size: 11px; font-family: var(--mono); letter-spacing: 1.5px; text-transform: uppercase; color: var(--text3); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.firma-toggle { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text2); cursor: pointer; }
+.firma-toggle input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+.logo-upload-area { border: 2px dashed var(--border2); border-radius: var(--radius); padding: 16px; text-align: center; cursor: pointer; transition: all 0.15s; margin-bottom: 14px; }
+.logo-upload-area:hover { border-color: var(--accent-dim); background: var(--accent-bg); }
+.logo-upload-area img { max-height: 60px; max-width: 180px; object-fit: contain; }
+.logo-upload-area .upload-hint { font-size: 12px; color: var(--text3); font-family: var(--mono); }
+
+/* FİŞ ÜRÜN TABLOSU */
+.fis-urun-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+.fis-urun-table th { font-size: 10px; font-family: var(--mono); letter-spacing: 1px; text-transform: uppercase; color: var(--text3); padding: 6px 8px; border-bottom: 1px solid var(--border); text-align: left; background: var(--surface2); }
+.fis-urun-table td { padding: 5px 4px; vertical-align: middle; }
+.fis-urun-input { background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; padding: 7px 9px; color: var(--text); font-family: var(--font); font-size: 13px; outline: none; transition: border-color 0.15s; width: 100%; }
+.fis-urun-input:focus { border-color: var(--accent-dim); }
+.fis-urun-select { background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; padding: 7px 6px; color: var(--text); font-family: var(--font); font-size: 12px; outline: none; }
+.fis-tutar-cell { font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--accent); padding: 0 8px; white-space: nowrap; }
+.fis-del-btn { background: none; border: none; cursor: pointer; color: var(--text3); font-size: 16px; padding: 4px 6px; border-radius: 6px; transition: all 0.15s; }
+.fis-del-btn:hover { background: var(--red-bg); color: var(--red); }
+
+/* TOPLAM ALANI */
+.fis-toplam-wrap { text-align: right; }
+.fis-toplam-row { display: flex; justify-content: flex-end; align-items: center; gap: 20px; padding: 5px 0; font-size: 14px; }
+.fis-toplam-label { color: var(--text2); min-width: 120px; text-align: right; }
+.fis-toplam-val { font-family: var(--mono); font-weight: 700; min-width: 100px; text-align: right; }
+.fis-toplam-row.genel { border-top: 2px solid var(--border2); padding-top: 10px; margin-top: 5px; font-size: 16px; }
+.fis-toplam-row.genel .fis-toplam-val { color: var(--accent); font-size: 18px; }
+.fis-toplam-row.kalan .fis-toplam-val { color: var(--red); font-size: 16px; }
+
+/* ÖNİZLEME - A5 Siyah Beyaz */
+.fis-preview-wrap { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; }
+.fis-preview-actions { display: flex; flex-direction: column; gap: 10px; min-width: 160px; }
+.fis-onizleme {
+  width: 148mm; min-height: 210mm;
+  background: #fff; color: #000;
+  border: 1px solid #ccc;
+  padding: 10mm 10mm;
+  font-family: 'Arial', sans-serif;
+  font-size: 11px;
+  box-shadow: var(--shadow);
+  flex-shrink: 0;
+}
+.fis-on-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6mm; padding-bottom: 4mm; border-bottom: 2px solid #000; }
+.fis-on-firma { max-width: 55%; }
+.fis-on-firma-logo { max-height: 18mm; max-width: 35mm; object-fit: contain; margin-bottom: 3px; display: block; }
+.fis-on-firma-adi { font-size: 13px; font-weight: 700; color: #000; }
+.fis-on-firma-bilgi { font-size: 9px; color: #333; margin-top: 2px; line-height: 1.5; }
+.fis-on-baslik { text-align: right; }
+.fis-on-baslik h2 { font-size: 16px; font-weight: 700; color: #000; margin: 0 0 4px; letter-spacing: 1px; }
+.fis-on-baslik-bilgi { font-size: 10px; color: #333; line-height: 1.8; }
+.fis-on-musteri { margin-bottom: 5mm; padding: 3mm 4mm; background: #f5f5f5; border: 1px solid #ddd; font-size: 11px; }
+.fis-on-musteri span { font-weight: 700; }
+.fis-on-table { width: 100%; border-collapse: collapse; margin-bottom: 5mm; }
+.fis-on-table th { background: #000; color: #fff; padding: 3px 5px; font-size: 10px; text-align: left; }
+.fis-on-table td { padding: 3px 5px; border-bottom: 1px solid #e0e0e0; font-size: 10px; vertical-align: top; }
+.fis-on-table tr:nth-child(even) td { background: #f9f9f9; }
+.fis-on-table td.right { text-align: right; }
+.fis-on-toplam { margin-left: auto; width: 55mm; }
+.fis-on-toplam-row { display: flex; justify-content: space-between; padding: 2px 0; font-size: 10px; border-bottom: 1px solid #eee; }
+.fis-on-toplam-row.bold { font-weight: 700; font-size: 12px; border-top: 2px solid #000; border-bottom: none; padding-top: 4px; margin-top: 2px; }
+.fis-on-toplam-row.kalan { font-weight: 700; font-size: 11px; color: #c00; }
+
+/* GEÇMİŞ FİŞLER */
+.gecmis-fis-kart { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 20px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.15s; }
+.gecmis-fis-kart:hover { border-color: var(--accent-dim); background: var(--surface2); }
+.gecmis-fis-no { font-family: var(--mono); font-size: 12px; color: var(--accent); font-weight: 700; }
+.gecmis-fis-musteri { font-size: 14px; font-weight: 700; margin: 3px 0; }
+.gecmis-fis-tarih { font-size: 11px; color: var(--text3); font-family: var(--mono); }
+.gecmis-fis-tutar { font-family: var(--mono); font-size: 18px; font-weight: 800; color: var(--accent); }
+
+@media print {
+  body > * { display: none !important; }
+  .fis-onizleme { display: block !important; box-shadow: none; border: none; }
+}
 </style>
 </head>
 <body>
@@ -298,7 +375,16 @@ td { padding: 10px 13px; font-size: 13px; }
       </button>
     </div>
     <div class="nav-section">
-      <span class="nav-section-title">📒 Borç Defteri</span>
+      <span class="nav-section-title">🧾 Sipariş Fişi</span>
+      <button class="nav-item" id="nav-fis-yeni" onclick="showPage('fis-yeni')">
+        <span class="nav-icon">➕</span> Yeni Fiş
+      </button>
+      <button class="nav-item" id="nav-fis-gecmis" onclick="showPage('fis-gecmis')">
+        <span class="nav-icon">📋</span> Geçmiş Fişler
+      </button>
+    </div>
+    <div class="nav-section">
+      <span class="nav-section-title">📒 Cari Hesap</span>
       <button class="nav-item" id="nav-borc-musteriler" onclick="showPage('borc-musteriler')">
         <span class="nav-icon">👥</span> Müşteriler
       </button>
@@ -498,6 +584,145 @@ td { padding: 10px 13px; font-size: 13px; }
     </div>
   </div>
 
+
+  <!-- ===== SİPARİŞ FİŞİ: YENİ FİŞ ===== -->
+  <div id="page-fis-yeni" class="page">
+    <div class="topbar">
+      <div class="page-title">🧾 Yeni Sipariş Fişi</div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-ghost" onclick="fisSifirla()">🗑 Temizle</button>
+        <button class="btn btn-primary" onclick="fisOnizle()">👁 Önizle & Kaydet</button>
+      </div>
+    </div>
+    <div class="content">
+      <div class="fis-form-wrap">
+
+        <!-- FİRMA BİLGİLERİ -->
+        <div class="fis-section">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+            <span class="fis-section-title" style="margin:0">🏢 Firma Bilgileri</span>
+            <label class="firma-toggle">
+              <input type="checkbox" id="fis-firma-goster" checked onchange="toggleFirma()"> Fişte Göster
+            </label>
+          </div>
+          <div id="fis-firma-alani">
+            <div style="display:flex;gap:16px;align-items:flex-start">
+              <div>
+                <div class="logo-upload-area" id="logo-upload-area" onclick="document.getElementById('logo-input').click()" style="width:120px;height:80px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px">
+                  <img id="logo-preview" src="" style="display:none;max-height:60px;max-width:100px">
+                  <span class="upload-hint" id="logo-hint">📷 Logo Ekle</span>
+                </div>
+                <input type="file" id="logo-input" accept="image/*" style="display:none" onchange="logoYukle(event)">
+                <button class="btn btn-ghost btn-sm" id="logo-sil-btn" style="display:none;margin-top:6px;width:100%" onclick="logoSil()">✕ Sil</button>
+              </div>
+              <div style="flex:1">
+                <div class="form-group"><label class="form-label">Firma Adı</label><input class="form-input" id="fis-firma-adi" placeholder="Biyares Tekstil" oninput="saveFirmaInfo()"></div>
+                <div class="form-row">
+                  <div class="form-group"><label class="form-label">Telefon</label><input class="form-input" id="fis-firma-tel" placeholder="0532 xxx xx xx" oninput="saveFirmaInfo()"></div>
+                  <div class="form-group"><label class="form-label">Adres</label><input class="form-input" id="fis-firma-adres" placeholder="İstanbul" oninput="saveFirmaInfo()"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MÜŞTERİ BİLGİLERİ -->
+        <div class="fis-section">
+          <div class="fis-section-title">👤 Müşteri Bilgileri</div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Müşteri Adı *</label><input class="form-input" id="fis-musteri-adi" placeholder="Ahmet Yılmaz" list="musteri-listesi"></div>
+            <div class="form-group"><label class="form-label">Şehir</label><input class="form-input" id="fis-musteri-sehir" placeholder="İstanbul"></div>
+          </div>
+          <datalist id="musteri-listesi"></datalist>
+        </div>
+
+        <!-- ÜRÜNLER -->
+        <div class="fis-section">
+          <div class="fis-section-title">📦 Ürünler</div>
+          <div style="overflow-x:auto">
+            <table class="fis-urun-table" id="fis-urun-table">
+              <thead>
+                <tr>
+                  <th style="width:40px">#</th>
+                  <th>Açıklama</th>
+                  <th style="width:70px">Adet</th>
+                  <th style="width:100px">Birim</th>
+                  <th style="width:100px">Birim Fiyat</th>
+                  <th style="width:80px">Para Birimi</th>
+                  <th style="width:90px">Tutar</th>
+                  <th style="width:36px"></th>
+                </tr>
+              </thead>
+              <tbody id="fis-urun-tbody"></tbody>
+            </table>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="fisUrunEkle()" style="margin-top:8px">+ Satır Ekle</button>
+        </div>
+
+        <!-- TOPLAM -->
+        <div class="fis-section">
+          <div class="fis-section-title">💰 Özet</div>
+          <div class="fis-toplam-wrap">
+            <div class="fis-toplam-row">
+              <span class="fis-toplam-label">Ara Toplam</span>
+              <span class="fis-toplam-val" id="fis-ara-toplam">₺0,00</span>
+            </div>
+            <div class="fis-toplam-row" id="fis-indirim-row" style="display:none">
+              <span class="fis-toplam-label">İndirim</span>
+              <span class="fis-toplam-val" id="fis-indirim-goster" style="color:var(--green)">-₺0,00</span>
+            </div>
+            <div class="fis-toplam-row genel">
+              <span class="fis-toplam-label" style="font-weight:700">Genel Toplam</span>
+              <span class="fis-toplam-val" id="fis-genel-toplam">₺0,00</span>
+            </div>
+            <div class="fis-toplam-row" id="fis-odeme-row" style="display:none">
+              <span class="fis-toplam-label">Ödeme Alındı</span>
+              <span class="fis-toplam-val" id="fis-odeme-goster" style="color:var(--green)">-₺0,00</span>
+            </div>
+            <div class="fis-toplam-row kalan" id="fis-kalan-row" style="display:none">
+              <span class="fis-toplam-label" style="font-weight:700;color:var(--red)">Kalan</span>
+              <span class="fis-toplam-val" id="fis-kalan-goster"></span>
+            </div>
+          </div>
+          <div style="display:flex;gap:16px;margin-top:16px;flex-wrap:wrap">
+            <div style="flex:1;min-width:150px"><label class="form-label">İndirim (isteğe bağlı)</label><input class="form-input" id="fis-indirim" type="number" min="0" step="0.01" placeholder="0.00" oninput="fisToplam()"></div>
+            <div style="flex:1;min-width:150px"><label class="form-label">Ödeme Alındı (isteğe bağlı)</label><input class="form-input" id="fis-odeme" type="number" min="0" step="0.01" placeholder="0.00" oninput="fisToplam()"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SİPARİŞ FİŞİ: ÖNİZLEME ===== -->
+  <div id="page-fis-onizleme" class="page">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="back-btn" onclick="showPage('fis-yeni')">← Düzenle</button>
+        <div class="page-title" id="onizleme-baslik">Fiş Önizleme</div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" onclick="window.print()">🖨 Yazdır</button>
+        <button class="btn btn-ghost btn-sm" onclick="fisPDFIndir()">📄 PDF İndir</button>
+        <button class="btn btn-ghost btn-sm" onclick="fisResimIndir()">🖼 Resim İndir</button>
+        <button class="btn btn-primary btn-sm" onclick="fisWhatsapp()">📲 WhatsApp</button>
+      </div>
+    </div>
+    <div class="content">
+      <div id="fis-preview-container"></div>
+    </div>
+  </div>
+
+  <!-- ===== SİPARİŞ FİŞİ: GEÇMİŞ ===== -->
+  <div id="page-fis-gecmis" class="page">
+    <div class="topbar">
+      <div class="page-title">📋 Geçmiş Fişler</div>
+    </div>
+    <div class="content" id="fis-gecmis-content">
+      <div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+    </div>
+  </div>
+
 </main>
 </div>
 
@@ -657,7 +882,7 @@ td { padding: 10px 13px; font-size: 13px; }
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby737YihIdCEa1jCqP7X3lPAhJq8bJIdBc0-AIwzQXRzuyrOR9Nj1Xqkap7Xa6hE8KZ/exec';
 const SHEET_ID = '1ORY8ISiWDjqDHhHsjBOhZNKbH52lsB70ZmPdIxPxEjA';
 
-let DATA = { urunler:[], giris:[], cikis:[], musteriler:[], satislar:[], odemeler:[] };
+let DATA = { urunler:[], giris:[], cikis:[], musteriler:[], satislar:[], odemeler:[], fisler:[] };
 let activeUrun = null;
 let activeMusteri = null;
 let stokEditRow = null;
@@ -719,14 +944,17 @@ async function loadAllData() {
   const icon=document.getElementById('syncIcon');
   btn.disabled=true; icon.style.animation='spin 1s linear infinite';
   try {
-    const [u,g,c,m,s,o] = await Promise.all([
+    const [u,g,c,m,s,o,f] = await Promise.all([
       fetchSheet('ÜRÜNLER'), fetchSheet('STOK_GIRIS'), fetchSheet('STOK_CIKIS'),
-      fetchSheet('MÜŞTERİLER'), fetchSheet('SATIŞLAR'), fetchSheet('ÖDEMELER')
+      fetchSheet('MÜŞTERİLER'), fetchSheet('SATIŞLAR'), fetchSheet('ÖDEMELER'),
+      fetchSheet('FİŞLER')
     ]);
     DATA.urunler=u; DATA.giris=g; DATA.cikis=c;
-    DATA.musteriler=m; DATA.satislar=s; DATA.odemeler=o;
+    DATA.musteriler=m; DATA.satislar=s; DATA.odemeler=o; DATA.fisler=f;
+    renderFisGecmis();
     renderUrunGrid(); renderStokOzet();
     renderMusteriGrid(); renderBorcOzet();
+    renderFisGecmis(); fillMusteriDatalist();
     if (activeUrun) { activeUrun=DATA.urunler.find(x=>x['ÜRÜN_ADI']===activeUrun['ÜRÜN_ADI'])||activeUrun; updateStokDetayHeader(); renderStokHareketler(); }
     if (activeMusteri) { activeMusteri=DATA.musteriler.find(x=>x['İSİM']===activeMusteri['İSİM'])||activeMusteri; updateMusteriDetayHeader(); renderBorcHareketler(); }
     toast('Veriler güncellendi ✓','success');
@@ -1210,7 +1438,7 @@ function showPage(page) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  const map={'stok-urunler':'nav-stok-urunler','stok-detay':'nav-stok-urunler','stok-hareketler':'nav-stok-urunler','stok-ozet':'nav-stok-ozet','borc-musteriler':'nav-borc-musteriler','borc-detay':'nav-borc-musteriler','borc-hareketler':'nav-borc-musteriler','borc-ozet':'nav-borc-ozet'};
+  const map={'stok-urunler':'nav-stok-urunler','stok-detay':'nav-stok-urunler','stok-hareketler':'nav-stok-urunler','stok-ozet':'nav-stok-ozet','borc-musteriler':'nav-borc-musteriler','borc-detay':'nav-borc-musteriler','borc-hareketler':'nav-borc-musteriler','borc-ozet':'nav-borc-ozet','fis-yeni':'nav-fis-yeni','fis-gecmis':'nav-fis-gecmis','fis-onizleme':'nav-fis-yeni'};
   if (map[page]) document.getElementById(map[page])?.classList.add('active');
 }
 function openModal(type) {
@@ -1232,6 +1460,422 @@ function dlCSV(csv, filename) {
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 let toastTimer;
 function toast(msg,type='success') { const el=document.getElementById('toast'); el.textContent=msg; el.className='show '+type; clearTimeout(toastTimer); toastTimer=setTimeout(()=>{el.className='';},3000); }
+
+
+// ══════════════════════════════════════
+//  SİPARİŞ FİŞİ
+// ══════════════════════════════════════
+let fisUrunler = [];
+let fisEditNo = null;
+let logoDataUrl = null;
+
+// Firma bilgilerini localStorage'a kaydet
+function saveFirmaInfo() {
+  const info = {
+    adi: document.getElementById('fis-firma-adi').value,
+    tel: document.getElementById('fis-firma-tel').value,
+    adres: document.getElementById('fis-firma-adres').value,
+    goster: document.getElementById('fis-firma-goster').checked
+  };
+  localStorage.setItem('biyares_firma', JSON.stringify(info));
+}
+function loadFirmaInfo() {
+  try {
+    const info = JSON.parse(localStorage.getItem('biyares_firma') || '{}');
+    if (info.adi) document.getElementById('fis-firma-adi').value = info.adi;
+    if (info.tel) document.getElementById('fis-firma-tel').value = info.tel;
+    if (info.adres) document.getElementById('fis-firma-adres').value = info.adres;
+    if (info.goster === false) { document.getElementById('fis-firma-goster').checked = false; toggleFirma(); }
+    const logo = localStorage.getItem('biyares_logo');
+    if (logo) { logoDataUrl = logo; document.getElementById('logo-preview').src = logo; document.getElementById('logo-preview').style.display = 'block'; document.getElementById('logo-hint').style.display = 'none'; document.getElementById('logo-sil-btn').style.display = 'block'; }
+  } catch(e) {}
+}
+function toggleFirma() {
+  const goster = document.getElementById('fis-firma-goster').checked;
+  document.getElementById('fis-firma-alani').style.display = goster ? '' : 'none';
+  saveFirmaInfo();
+}
+function logoYukle(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    logoDataUrl = ev.target.result;
+    localStorage.setItem('biyares_logo', logoDataUrl);
+    document.getElementById('logo-preview').src = logoDataUrl;
+    document.getElementById('logo-preview').style.display = 'block';
+    document.getElementById('logo-hint').style.display = 'none';
+    document.getElementById('logo-sil-btn').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+function logoSil() {
+  logoDataUrl = null;
+  localStorage.removeItem('biyares_logo');
+  document.getElementById('logo-preview').src = '';
+  document.getElementById('logo-preview').style.display = 'none';
+  document.getElementById('logo-hint').style.display = 'block';
+  document.getElementById('logo-sil-btn').style.display = 'none';
+  document.getElementById('logo-input').value = '';
+}
+
+// Müşteri datalist doldur
+function fillMusteriDatalist() {
+  const dl = document.getElementById('musteri-listesi');
+  if (!dl) return;
+  dl.innerHTML = DATA.musteriler.map(m => `<option value="${esc(m['İSİM'])} - ${esc(m['ŞEHİR'] || '')}"></option>`).join('');
+}
+
+// Fiş No üret
+function yeniFisNo() {
+  const today = new Date();
+  const yy = today.getFullYear().toString().slice(-2);
+  const mm = String(today.getMonth()+1).padStart(2,'0');
+  const dd = String(today.getDate()).padStart(2,'0');
+  // Bugünkü fiş sayısını bul
+  const bugun = today.toISOString().split('T')[0];
+  const bugunFisler = [...new Set(DATA.fisler.filter(f => f['TARİH'] === bugun).map(f => f['FİŞ_NO']))];
+  const sira = String(bugunFisler.length + 1).padStart(3, '0');
+  return `F${yy}${mm}${dd}-${sira}`;
+}
+
+// Ürün satırı ekle
+function fisUrunEkle(urun) {
+  const id = Date.now() + Math.random();
+  fisUrunler.push({
+    id,
+    aciklama: urun?.aciklama || '',
+    adet: urun?.adet || 1,
+    birim: urun?.birim || 'Adet',
+    birimFiyat: urun?.birimFiyat || 0,
+    paraBirimi: urun?.paraBirimi || 'TL'
+  });
+  renderFisUrunler();
+}
+
+function fisUrunSil(id) {
+  fisUrunler = fisUrunler.filter(u => u.id !== id);
+  renderFisUrunler();
+}
+
+function fisUrunGuncelle(id, field, value) {
+  const u = fisUrunler.find(x => x.id === id);
+  if (!u) return;
+  u[field] = field === 'adet' || field === 'birimFiyat' ? (parseFloat(value) || 0) : value;
+  renderFisUrunlerTutar();
+  fisToplam();
+}
+
+function renderFisUrunler() {
+  const tbody = document.getElementById('fis-urun-tbody');
+  tbody.innerHTML = fisUrunler.map((u, i) => `
+    <tr>
+      <td style="color:var(--text3);font-family:var(--mono);font-size:12px;padding:5px 8px">${i+1}</td>
+      <td><input class="fis-urun-input" value="${esc(u.aciklama)}" placeholder="Ürün açıklaması" oninput="fisUrunGuncelle(${u.id}, 'aciklama', this.value)"></td>
+      <td><input class="fis-urun-input" type="number" min="0" step="0.01" value="${u.adet}" style="text-align:center" oninput="fisUrunGuncelle(${u.id}, 'adet', this.value)"></td>
+      <td>
+        <select class="fis-urun-select" onchange="fisUrunGuncelle(${u.id}, 'birim', this.value)">
+          ${['Adet','Kg','Litre','Desi','Metre','Paket','Koli','Çift'].map(b => `<option value="${b}" ${u.birim===b?'selected':''}>${b}</option>`).join('')}
+        </select>
+      </td>
+      <td><input class="fis-urun-input" type="number" min="0" step="0.01" value="${u.birimFiyat}" placeholder="0.00" oninput="fisUrunGuncelle(${u.id}, 'birimFiyat', this.value)"></td>
+      <td>
+        <select class="fis-urun-select" onchange="fisUrunGuncelle(${u.id}, 'paraBirimi', this.value)">
+          ${['TL','USD','EUR','GBP'].map(p => `<option value="${p}" ${u.paraBirimi===p?'selected':''}>${p}</option>`).join('')}
+        </select>
+      </td>
+      <td class="fis-tutar-cell" id="tutar-${u.id}">${formatPara(u.adet * u.birimFiyat, u.paraBirimi)}</td>
+      <td><button class="fis-del-btn" onclick="fisUrunSil(${u.id})">✕</button></td>
+    </tr>
+  `).join('');
+  fisToplam();
+}
+
+function renderFisUrunlerTutar() {
+  fisUrunler.forEach(u => {
+    const el = document.getElementById('tutar-' + u.id);
+    if (el) el.textContent = formatPara(u.adet * u.birimFiyat, u.paraBirimi);
+  });
+}
+
+function formatPara(tutar, birim) {
+  const sembol = birim === 'USD' ? '$' : birim === 'EUR' ? '€' : birim === 'GBP' ? '£' : '₺';
+  return sembol + (tutar || 0).toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+}
+
+function fisToplam() {
+  // Çoklu para birimi varsa TL bazlı toplam al
+  const araToplam = fisUrunler.reduce((s, u) => s + (u.adet * u.birimFiyat), 0);
+  const indirim = parseFloat(document.getElementById('fis-indirim').value) || 0;
+  const odeme = parseFloat(document.getElementById('fis-odeme').value) || 0;
+  const genelToplam = araToplam - indirim;
+  const kalan = genelToplam - odeme;
+
+  // Para birimi - çoğunluk hangisi
+  const paraBirimleri = fisUrunler.map(u => u.paraBirimi);
+  const enCok = paraBirimleri.sort((a,b) => paraBirimleri.filter(v=>v===b).length - paraBirimleri.filter(v=>v===a).length)[0] || 'TL';
+  const sembol = enCok === 'USD' ? '$' : enCok === 'EUR' ? '€' : enCok === 'GBP' ? '£' : '₺';
+
+  document.getElementById('fis-ara-toplam').textContent = sembol + araToplam.toLocaleString('tr-TR', {minimumFractionDigits:2});
+  document.getElementById('fis-genel-toplam').textContent = sembol + genelToplam.toLocaleString('tr-TR', {minimumFractionDigits:2});
+
+  const inRow = document.getElementById('fis-indirim-row');
+  const odRow = document.getElementById('fis-odeme-row');
+  const kalanRow = document.getElementById('fis-kalan-row');
+
+  if (indirim > 0) { inRow.style.display = 'flex'; document.getElementById('fis-indirim-goster').textContent = '-' + sembol + indirim.toLocaleString('tr-TR', {minimumFractionDigits:2}); }
+  else { inRow.style.display = 'none'; }
+
+  if (odeme > 0) { odRow.style.display = 'flex'; document.getElementById('fis-odeme-goster').textContent = '-' + sembol + odeme.toLocaleString('tr-TR', {minimumFractionDigits:2}); kalanRow.style.display = 'flex'; document.getElementById('fis-kalan-goster').textContent = sembol + kalan.toLocaleString('tr-TR', {minimumFractionDigits:2}); }
+  else { odRow.style.display = 'none'; kalanRow.style.display = 'none'; }
+}
+
+// Önizle & Kaydet
+async function fisOnizle() {
+  const musteri = document.getElementById('fis-musteri-adi').value.trim();
+  if (!musteri) { toast('Müşteri adı zorunlu', 'error'); return; }
+  if (fisUrunler.length === 0) { toast('En az bir ürün ekleyin', 'error'); return; }
+
+  const fisNo = fisEditNo || yeniFisNo();
+  const tarih = new Date().toISOString().split('T')[0];
+  const musteriSehir = document.getElementById('fis-musteri-sehir').value.trim();
+  const indirim = parseFloat(document.getElementById('fis-indirim').value) || 0;
+  const odeme = parseFloat(document.getElementById('fis-odeme').value) || 0;
+  const araToplam = fisUrunler.reduce((s, u) => s + (u.adet * u.birimFiyat), 0);
+  const genelToplam = araToplam - indirim;
+
+  // Firma bilgileri
+  const firmaAdi = document.getElementById('fis-firma-adi').value.trim();
+  const firmaTel = document.getElementById('fis-firma-tel').value.trim();
+  const firmaAdres = document.getElementById('fis-firma-adres').value.trim();
+  const firmaGoster = document.getElementById('fis-firma-goster').checked;
+
+  // Para birimi
+  const paraBirimleri = fisUrunler.map(u => u.paraBirimi);
+  const enCok = paraBirimleri.sort((a,b) => paraBirimleri.filter(v=>v===b).length - paraBirimleri.filter(v=>v===a).length)[0] || 'TL';
+  const sembol = enCok === 'USD' ? '$' : enCok === 'EUR' ? '€' : enCok === 'GBP' ? '£' : '₺';
+
+  // Önizleme HTML
+  const onizlemeHTML = `
+    <div class="fis-onizleme" id="fis-onizleme-element">
+      <div class="fis-on-header">
+        <div class="fis-on-firma" ${firmaGoster ? '' : 'style="visibility:hidden"'}>
+          ${logoDataUrl ? `<img src="${logoDataUrl}" class="fis-on-firma-logo">` : ''}
+          ${firmaAdi ? `<div class="fis-on-firma-adi">${esc(firmaAdi)}</div>` : ''}
+          <div class="fis-on-firma-bilgi">
+            ${firmaAdres ? esc(firmaAdres) + '<br>' : ''}
+            ${firmaTel ? esc(firmaTel) : ''}
+          </div>
+        </div>
+        <div class="fis-on-baslik">
+          <h2>SİPARİŞ FİŞİ</h2>
+          <div class="fis-on-baslik-bilgi">
+            <strong>Tarih:</strong> ${tarih}<br>
+            <strong>Fiş No:</strong> ${fisNo}
+          </div>
+        </div>
+      </div>
+
+      <div class="fis-on-musteri">
+        <span>Sayın:</span> ${esc(musteri)}${musteriSehir ? ' &nbsp;/&nbsp; ' + esc(musteriSehir) : ''}
+      </div>
+
+      <table class="fis-on-table">
+        <thead>
+          <tr>
+            <th style="width:25px">#</th>
+            <th>Açıklama</th>
+            <th style="width:35px">Adet</th>
+            <th style="width:35px">Birim</th>
+            <th style="width:55px" class="right">Birim Fiyat</th>
+            <th style="width:60px" class="right">Tutar</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${fisUrunler.map((u, i) => `
+            <tr>
+              <td>${i+1}</td>
+              <td>${esc(u.aciklama)}</td>
+              <td>${u.adet}</td>
+              <td>${u.birim}</td>
+              <td class="right">${formatPara(u.birimFiyat, u.paraBirimi)}</td>
+              <td class="right">${formatPara(u.adet * u.birimFiyat, u.paraBirimi)}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+
+      <div style="display:flex;justify-content:flex-end">
+        <div class="fis-on-toplam">
+          <div class="fis-on-toplam-row"><span>Ara Toplam</span><span>${sembol}${araToplam.toLocaleString('tr-TR',{minimumFractionDigits:2})}</span></div>
+          ${indirim > 0 ? `<div class="fis-on-toplam-row"><span>İndirim</span><span>-${sembol}${indirim.toLocaleString('tr-TR',{minimumFractionDigits:2})}</span></div>` : ''}
+          <div class="fis-on-toplam-row bold"><span>Genel Toplam</span><span>${sembol}${genelToplam.toLocaleString('tr-TR',{minimumFractionDigits:2})}</span></div>
+          ${odeme > 0 ? `
+            <div class="fis-on-toplam-row"><span>Ödeme Alındı</span><span>-${sembol}${odeme.toLocaleString('tr-TR',{minimumFractionDigits:2})}</span></div>
+            <div class="fis-on-toplam-row kalan"><span>Kalan</span><span>${sembol}${(genelToplam-odeme).toLocaleString('tr-TR',{minimumFractionDigits:2})}</span></div>
+          ` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('fis-preview-container').innerHTML = onizlemeHTML;
+  document.getElementById('onizleme-baslik').textContent = fisNo + ' — ' + musteri;
+  showPage('fis-onizleme');
+
+  // Sheets'e kaydet
+  try {
+    const action = fisEditNo ? 'updateFis' : 'addFis';
+    await postAction({
+      action, fis_no: fisNo, tarih, musteri, indirim, odeme, toplam: genelToplam,
+      urunler: fisUrunler.map(u => ({aciklama: u.aciklama, adet: u.adet, birim: u.birim, birimFiyat: u.birimFiyat, paraBirimi: u.paraBirimi, tutar: u.adet * u.birimFiyat}))
+    });
+    toast('Fiş kaydedildi ✓', 'success');
+    fisEditNo = fisNo;
+    await loadAllData();
+  } catch(e) { toast('Kayıt hatası: ' + e.message, 'error'); }
+}
+
+// PDF İndir
+function fisPDFIndir() {
+  window.print();
+  toast('Yazdır/PDF kaydet penceresi açıldı', 'success');
+}
+
+// Resim İndir
+async function fisResimIndir() {
+  const el = document.getElementById('fis-onizleme-element');
+  if (!el) return;
+  try {
+    // html2canvas kütüphanesi yoksa alternatif
+    toast('Bunun için sayfayı yazdırıp "PDF olarak kaydet" seçeneğini kullanın', 'success');
+  } catch(e) { toast('Hata: ' + e.message, 'error'); }
+}
+
+// WhatsApp
+function fisWhatsapp() {
+  const fisNo = document.getElementById('onizleme-baslik').textContent.split(' — ')[0];
+  const musteri = document.getElementById('fis-musteri-adi')?.value || '';
+  const toplam = document.getElementById('fis-genel-toplam')?.textContent || '';
+  const mesaj = `Merhaba, ${musteri} için ${fisNo} numaralı sipariş fişiniz hazırlanmıştır.
+Genel Toplam: ${toplam}
+
+Biyares`;
+  const url = `https://wa.me/?text=${encodeURIComponent(mesaj)}`;
+  window.open(url, '_blank');
+}
+
+// Fişi sıfırla
+function fisSifirla() {
+  if (!confirm('Formu temizlemek istediğinizden emin misiniz?')) return;
+  fisUrunler = [];
+  fisEditNo = null;
+  document.getElementById('fis-musteri-adi').value = '';
+  document.getElementById('fis-musteri-sehir').value = '';
+  document.getElementById('fis-indirim').value = '';
+  document.getElementById('fis-odeme').value = '';
+  renderFisUrunler();
+  fisToplam();
+  fisUrunEkle();
+}
+
+// Geçmiş fişleri render et
+function renderFisGecmis() {
+  const wrap = document.getElementById('fis-gecmis-content');
+  if (!wrap) return;
+  
+  // Benzersiz fiş numaralarını grupla
+  const fisMap = {};
+  DATA.fisler.forEach(r => {
+    const no = r['FİŞ_NO'];
+    if (!fisMap[no]) {
+      fisMap[no] = {
+        fisNo: no, tarih: r['TARİH'], musteri: r['MÜŞTERİ'],
+        toplam: parseFloat(r['TOPLAM']) || 0,
+        odeme: parseFloat(r['ÖDEME']) || 0,
+        indirim: parseFloat(r['İNDİRİM']) || 0,
+        urunler: []
+      };
+    }
+    fisMap[no].urunler.push({
+      aciklama: r['AÇIKLAMA'], adet: parseFloat(r['ADET']) || 0,
+      birim: r['BİRİM'], birimFiyat: parseFloat(r['BİRİM_FİYAT']) || 0,
+      paraBirimi: r['PARA_BİRİMİ'], tutar: parseFloat(r['TUTAR']) || 0
+    });
+  });
+
+  const fisler = Object.values(fisMap).sort((a,b) => b.tarih.localeCompare(a.tarih));
+
+  if (!fisler.length) {
+    wrap.innerHTML = '<div class="empty-state">Henüz fiş yok</div>';
+    return;
+  }
+
+  wrap.innerHTML = fisler.map(f => `
+    <div class="gecmis-fis-kart" onclick="gecmisFisAc('${esc(f.fisNo)}')">
+      <div>
+        <div class="gecmis-fis-no">${esc(f.fisNo)}</div>
+        <div class="gecmis-fis-musteri">${esc(f.musteri)}</div>
+        <div class="gecmis-fis-tarih">${esc(f.tarih)}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="gecmis-fis-tutar">₺${f.toplam.toLocaleString('tr-TR',{maximumFractionDigits:0})}</div>
+        <button class="btn btn-red btn-sm" onclick="event.stopPropagation();gecmisFisSil('${esc(f.fisNo)}')">🗑</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function gecmisFisAc(fisNo) {
+  // Fişi forma yükle
+  const fisMap = {};
+  DATA.fisler.forEach(r => {
+    if (r['FİŞ_NO'] !== fisNo) return;
+    if (!fisMap[fisNo]) {
+      fisMap[fisNo] = {
+        tarih: r['TARİH'], musteri: r['MÜŞTERİ'],
+        toplam: parseFloat(r['TOPLAM']) || 0,
+        odeme: parseFloat(r['ÖDEME']) || 0,
+        indirim: parseFloat(r['İNDİRİM']) || 0,
+        urunler: []
+      };
+    }
+    fisMap[fisNo].urunler.push({
+      aciklama: r['AÇIKLAMA'], adet: parseFloat(r['ADET']) || 1,
+      birim: r['BİRİM'] || 'Adet', birimFiyat: parseFloat(r['BİRİM_FİYAT']) || 0,
+      paraBirimi: r['PARA_BİRİMİ'] || 'TL', tutar: parseFloat(r['TUTAR']) || 0
+    });
+  });
+
+  const f = fisMap[fisNo];
+  if (!f) return;
+
+  fisEditNo = fisNo;
+  fisUrunler = [];
+  f.urunler.forEach(u => fisUrunEkle(u));
+
+  document.getElementById('fis-musteri-adi').value = f.musteri;
+  document.getElementById('fis-indirim').value = f.indirim || '';
+  document.getElementById('fis-odeme').value = f.odeme || '';
+  
+  showPage('fis-yeni');
+  toast(fisNo + ' düzenleme modunda', 'success');
+}
+
+async function gecmisFisSil(fisNo) {
+  if (!confirm(`${fisNo} numaralı fişi silmek istediğinizden emin misiniz?`)) return;
+  try {
+    await postAction({action: 'deleteFis', fis_no: fisNo});
+    toast('Fiş silindi ✓', 'success');
+    await loadAllData();
+  } catch(e) { toast('Hata: ' + e.message, 'error'); }
+}
+
+// Sayfa açılınca firma bilgilerini yükle ve bir boş satır ekle
+setTimeout(() => {
+  loadFirmaInfo();
+  fillMusteriDatalist();
+  if (fisUrunler.length === 0) fisUrunEkle();
+}, 500);
 
 loadAllData();
 </script>
