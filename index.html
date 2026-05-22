@@ -849,10 +849,10 @@ async function submitStokDuzenle() {
   const r=stokEditRow._raw, isG=stokEditRow.tur==='giris';
   try {
     if (isG) {
-      await postAction({action:'updateRow',sheetName:'STOK_GIRIS',col0:r['TARİH'],col1:r['ÜRÜN_ADI'],col2:r['ADET'],newValues:[tarih,r['ÜRÜN_ADI'],Number(adet),ac]});
+      await postAction({action:'updateRow',sheetName:'STOK_GIRIS',rowIndex:r._row,col0:r['TARİH'],col1:r['ÜRÜN_ADI'],newValues:[tarih,r['ÜRÜN_ADI'],Number(adet),ac]});
     } else {
       const f=parseFloat(document.getElementById('f-stok-duzenle-fiyat').value)||0;
-      await postAction({action:'updateRow',sheetName:'STOK_CIKIS',col0:r['TARİH'],col1:r['ÜRÜN_ADI'],col2:r['ADET'],newValues:[tarih,r['ÜRÜN_ADI'],Number(adet),f,ac,r['ÖDENDİ_Mİ']||'EVET']});
+      await postAction({action:'updateRow',sheetName:'STOK_CIKIS',rowIndex:r._row,col0:r['TARİH'],col1:r['ÜRÜN_ADI'],newValues:[tarih,r['ÜRÜN_ADI'],Number(adet),f,ac,r['ÖDENDİ_Mİ']||'EVET']});
     }
     toast('Güncellendi ✓','success'); closeModal('stok-duzenle'); stokEditRow=null; await loadAllData();
   } catch(e) { toast('Hata: '+e.message,'error'); }
@@ -1085,10 +1085,10 @@ async function submitBorcDuzenle() {
       const adet=parseInt(document.getElementById('f-borc-duzenle-adet').value)||0;
       const fiyat=parseFloat(document.getElementById('f-borc-duzenle-fiyat').value)||0;
       const tutar=adet*fiyat;
-      await postAction({action:'updateRow',sheetName:'SATIŞLAR',col0:r['TARİH'],col1:r['MÜŞTERİ'],col2:r['AÇIKLAMA'],newValues:[tarih,r['MÜŞTERİ'],ac,adet,fiyat,tutar]});
+      await postAction({action:'updateRow',sheetName:'SATIŞLAR',rowIndex:r._row,col0:r['TARİH'],col1:r['MÜŞTERİ'],newValues:[tarih,r['MÜŞTERİ'],ac,adet,fiyat,tutar]});
     } else {
       const tutar=parseFloat(document.getElementById('f-borc-duzenle-tutar').value)||0;
-      await postAction({action:'updateRow',sheetName:'ÖDEMELER',col0:r['TARİH'],col1:r['MÜŞTERİ'],col2:r['AÇIKLAMA'],newValues:[tarih,r['MÜŞTERİ'],ac,tutar]});
+      await postAction({action:'updateRow',sheetName:'ÖDEMELER',rowIndex:r._row,col0:r['TARİH'],col1:r['MÜŞTERİ'],newValues:[tarih,r['MÜŞTERİ'],ac,tutar]});
     }
     toast('Güncellendi ✓','success'); closeModal('borc-duzenle'); borcEditRow=null; await loadAllData();
   } catch(e) { toast('Hata: '+e.message,'error'); }
