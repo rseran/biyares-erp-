@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>biyares — kolay ERP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f0e;
+    --surface: #161a18;
+    --surface2: #1e2421;
+    --border: #2a3330;
+    --border2: #374440;
+    --accent: #ff8c00;
+    --accent-dim: #e07800;
+    --accent-bg: rgba(255,140,0,0.08);
+    --accent-bg2: rgba(255,140,0,0.14);
+    --red: #ff5c5c;
+    --red-bg: rgba(255,92,92,0.08);
+    --amber: #ffb347;
+    --amber-bg: rgba(255,179,71,0.08);
+    --blue: #5b9cf6;
+    --blue-bg: rgba(91,156,246,0.08);
+    --text: #e8ede9;
+    --text2: #8fa898;
+    --text3: #5a6e62;
+    --radius: 10px;
+    --radius-lg: 16px;
+    --font: 'Syne', sans-serif;
+    --mono: 'DM Mono', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* LAYOUT */
+  .app { display: flex; min-height: 100vh; }
+  .sidebar {
+    width: 240px; flex-shrink: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    position: sticky; top: 0; height: 100vh;
+  }
+  .main { flex: 1; overflow-x: hidden; }
+
+  /* SIDEBAR */
+  .logo {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo-mark {
+    font-size: 22px; font-weight: 800; letter-spacing: -0.5px;
+    color: var(--accent);
+  }
+  .logo-sub {
+    font-size: 11px; color: var(--text3);
+    font-family: var(--mono); letter-spacing: 2px;
+    text-transform: uppercase; margin-top: 2px;
+  }
+  .nav { padding: 16px 12px; flex: 1; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: var(--radius);
+    cursor: pointer; font-size: 14px; font-weight: 600;
+    color: var(--text2); transition: all 0.15s;
+    margin-bottom: 4px; border: none; background: none; width: 100%;
+    text-align: left;
+  }
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+  .nav-item.active { background: var(--accent-bg2); color: var(--accent); }
+  .nav-icon { font-size: 18px; width: 22px; text-align: center; }
+
+  .sidebar-footer {
+    padding: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .sync-btn {
+    width: 100%; padding: 10px;
+    background: var(--accent-bg); border: 1px solid var(--accent-dim);
+    color: var(--accent); border-radius: var(--radius);
+    font-family: var(--font); font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all 0.15s; display: flex;
+    align-items: center; justify-content: center; gap: 8px;
+  }
+  .sync-btn:hover { background: var(--accent-bg2); }
+  .sync-btn.spinning svg { animation: spin 1s linear infinite; }
+
+  /* TOPBAR */
+  .topbar {
+    padding: 20px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--surface);
+  }
+  .page-title { font-size: 20px; font-weight: 800; }
+  .badge-count {
+    font-family: var(--mono); font-size: 12px;
+    background: var(--accent-bg); color: var(--accent);
+    border: 1px solid var(--accent-dim);
+    padding: 3px 10px; border-radius: 20px;
+  }
+  .topbar-actions { display: flex; gap: 10px; }
+  .btn {
+    padding: 8px 16px; border-radius: var(--radius);
+    font-family: var(--font); font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all 0.15s; border: 1px solid;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .btn-primary {
+    background: var(--accent); color: #0d0f0e;
+    border-color: var(--accent);
+  }
+  .btn-primary:hover { background: #ff9f1a; }
+  .btn-ghost {
+    background: transparent; color: var(--text2);
+    border-color: var(--border2);
+  }
+  .btn-ghost:hover { background: var(--surface2); color: var(--text); }
+  .btn-danger {
+    background: var(--red-bg); color: var(--red);
+    border-color: rgba(255,92,92,0.3);
+  }
+  .btn-danger:hover { background: rgba(255,92,92,0.15); }
+
+  /* CONTENT */
+  .content { padding: 28px 32px; }
+
+  /* STATS ROW */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px; margin-bottom: 28px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px 22px;
+  }
+  .stat-label {
+    font-size: 11px; color: var(--text3);
+    font-family: var(--mono); letter-spacing: 1.5px;
+    text-transform: uppercase; margin-bottom: 10px;
+  }
+  .stat-value {
+    font-size: 28px; font-weight: 800; letter-spacing: -1px;
+  }
+  .stat-value.green { color: var(--accent); }
+  .stat-value.red { color: var(--red); }
+  .stat-value.amber { color: var(--amber); }
+  .stat-value.blue { color: var(--blue); }
+
+  /* TABLE */
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .table-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .search-input {
+    background: var(--surface2); border: 1px solid var(--border2);
+    border-radius: var(--radius); padding: 7px 12px;
+    color: var(--text); font-family: var(--mono); font-size: 13px;
+    width: 240px; outline: none; transition: border-color 0.15s;
+  }
+  .search-input:focus { border-color: var(--accent-dim); }
+  .search-input::placeholder { color: var(--text3); }
+  .select-filter {
+    background: var(--surface2); border: 1px solid var(--border2);
+    border-radius: var(--radius); padding: 7px 12px;
+    color: var(--text); font-family: var(--font); font-size: 13px;
+    outline: none; cursor: pointer;
+  }
+
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    padding: 12px 16px;
+    text-align: left; font-size: 11px;
+    font-family: var(--mono); letter-spacing: 1px;
+    text-transform: uppercase; color: var(--text3);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--surface2); }
+  td {
+    padding: 12px 16px; font-size: 13px; color: var(--text);
+  }
+  .td-mono { font-family: var(--mono); }
+  .td-muted { color: var(--text2); }
+
+  .pill {
+    display: inline-block; padding: 3px 10px;
+    border-radius: 20px; font-size: 11px; font-weight: 600;
+    font-family: var(--mono);
+  }
+  .pill-green { background: var(--accent-bg); color: var(--accent); border: 1px solid rgba(255,140,0,0.25); }
+  .pill-red   { background: var(--red-bg); color: var(--red); border: 1px solid rgba(255,92,92,0.25); }
+  .pill-amber { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(255,179,71,0.25); }
+  .pill-blue  { background: var(--blue-bg); color: var(--blue); border: 1px solid rgba(91,156,246,0.25); }
+  .pill-gray  { background: var(--surface2); color: var(--text2); border: 1px solid var(--border2); }
+
+  .del-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--text3); font-size: 16px; padding: 4px 6px;
+    border-radius: 6px; transition: all 0.15s;
+  }
+  .del-btn:hover { background: var(--red-bg); color: var(--red); }
+
+  .empty-row td {
+    text-align: center; padding: 40px;
+    color: var(--text3); font-size: 13px;
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7); z-index: 1000;
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-lg);
+    padding: 28px; width: 440px;
+    max-width: 95vw;
+  }
+  .modal-title { font-size: 18px; font-weight: 800; margin-bottom: 20px; }
+  .form-group { margin-bottom: 16px; }
+  .form-label {
+    display: block; font-size: 11px;
+    font-family: var(--mono); letter-spacing: 1px;
+    text-transform: uppercase; color: var(--text3);
+    margin-bottom: 6px;
+  }
+  .form-input, .form-select, .form-textarea {
+    width: 100%; background: var(--surface2);
+    border: 1px solid var(--border2); border-radius: var(--radius);
+    padding: 9px 12px; color: var(--text);
+    font-family: var(--font); font-size: 14px; outline: none;
+    transition: border-color 0.15s;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--accent-dim);
+  }
+  .form-select option { background: var(--surface2); }
+  .form-textarea { resize: vertical; min-height: 80px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .modal-actions {
+    display: flex; justify-content: flex-end; gap: 10px;
+    margin-top: 24px;
+  }
+
+  /* TOAST */
+  #toast {
+    position: fixed; bottom: 28px; right: 28px;
+    background: var(--surface); border: 1px solid var(--border2);
+    padding: 12px 18px; border-radius: var(--radius);
+    font-size: 13px; font-family: var(--mono);
+    z-index: 2000; opacity: 0; pointer-events: none;
+    transition: opacity 0.2s; max-width: 320px;
+  }
+  #toast.show { opacity: 1; }
+  #toast.success { border-color: var(--accent-dim); color: var(--accent); }
+  #toast.error { border-color: rgba(255,92,92,0.4); color: var(--red); }
+
+  /* LOADING */
+  .loading {
+    text-align: center; padding: 60px 20px;
+    color: var(--text3); font-family: var(--mono);
+    font-size: 13px;
+  }
+  .loading-dot {
+    display: inline-block; width: 6px; height: 6px;
+    background: var(--accent); border-radius: 50%;
+    margin: 0 3px; animation: blink 1.2s infinite;
+  }
+  .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes blink { 0%,80%,100%{opacity:0.2} 40%{opacity:1} }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* STOK UYARI */
+  .stok-warn {
+    background: var(--amber-bg); border: 1px solid rgba(255,179,71,0.25);
+    border-radius: var(--radius-lg); padding: 14px 18px;
+    margin-bottom: 28px; display: flex; align-items: center; gap: 12px;
+    font-size: 13px; color: var(--amber);
+  }
+  .stok-warn.hidden { display: none; }
+
+  /* ÖZET KART */
+  .ozet-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    margin-bottom: 28px;
+  }
+  .ozet-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 20px;
+  }
+  .ozet-title { font-size: 13px; font-weight: 700; color: var(--text2); margin-bottom: 14px; }
+  .ozet-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px;
+  }
+  .ozet-row:last-child { border-bottom: none; }
+  .ozet-name { color: var(--text); }
+  .ozet-val { font-family: var(--mono); color: var(--accent); font-weight: 600; }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .ozet-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .sidebar { display: none; }
+    .content { padding: 16px; }
+    .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">biyares</div>
+      <div class="logo-sub">kolay ERP</div>
+    </div>
+    <nav class="nav">
+      <button class="nav-item active" onclick="showPage('ozet')" id="nav-ozet">
+        <span class="nav-icon">📊</span> Özet
+      </button>
+      <button class="nav-item" onclick="showPage('urunler')" id="nav-urunler">
+        <span class="nav-icon">📦</span> Ürünler
+      </button>
+      <button class="nav-item" onclick="showPage('stok-giris')" id="nav-stok-giris">
+        <span class="nav-icon">⬇️</span> Stok Giriş
+      </button>
+      <button class="nav-item" onclick="showPage('stok-cikis')" id="nav-stok-cikis">
+        <span class="nav-icon">⬆️</span> Stok Çıkış
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="sync-btn" id="syncBtn" onclick="loadAllData()">
+        <svg id="syncIcon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3 12a9 9 0 019-9 9.75 9.75 0 016.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 01-9 9 9.75 9.75 0 01-6.74-2.74L3 16"/><path d="M3 21v-5h5"/>
+        </svg>
+        Yenile
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ÖZET SAYFASI -->
+    <div id="page-ozet">
+      <div class="topbar">
+        <div>
+          <div class="page-title">📊 Genel Özet</div>
+        </div>
+      </div>
+      <div class="content">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Toplam Ürün</div>
+            <div class="stat-value blue" id="stat-urun">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Toplam Giriş</div>
+            <div class="stat-value green" id="stat-giris">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Toplam Çıkış</div>
+            <div class="stat-value red" id="stat-cikis">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Toplam Ciro</div>
+            <div class="stat-value amber" id="stat-ciro">—</div>
+          </div>
+        </div>
+
+        <div id="stok-warn-bar" class="stok-warn hidden">
+          ⚠️ <span id="stok-warn-text"></span>
+        </div>
+
+        <div class="ozet-grid">
+          <div class="ozet-card">
+            <div class="ozet-title">📦 Ürün Bazlı Net Stok</div>
+            <div id="ozet-stok-list"><div class="loading"><span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></div></div>
+          </div>
+          <div class="ozet-card">
+            <div class="ozet-title">📈 Kategori Bazlı Satış Tutarı</div>
+            <div id="ozet-kategori-list"><div class="loading"><span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÜRÜNLER SAYFASI -->
+    <div id="page-urunler" style="display:none">
+      <div class="topbar">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="page-title">📦 Ürünler</div>
+          <span class="badge-count" id="urun-count">—</span>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-primary" onclick="openModal('urun')">+ Ürün Ekle</button>
+        </div>
+      </div>
+      <div class="content">
+        <div class="table-wrap">
+          <div class="table-header">
+            <input class="search-input" type="text" placeholder="Ürün ara…" id="search-urun" oninput="renderUrunler()">
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Ürün Adı</th>
+                <th>Kategori</th>
+                <th>Net Stok</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="tbody-urunler">
+              <tr class="empty-row"><td colspan="5">Yükleniyor…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- STOK GİRİŞ SAYFASI -->
+    <div id="page-stok-giris" style="display:none">
+      <div class="topbar">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="page-title">⬇️ Stok Giriş</div>
+          <span class="badge-count" id="giris-count">—</span>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-primary" onclick="openModal('giris')">+ Giriş Ekle</button>
+        </div>
+      </div>
+      <div class="content">
+        <div class="table-wrap">
+          <div class="table-header">
+            <input class="search-input" type="text" placeholder="Ürün ya da açıklama ara…" id="search-giris" oninput="renderStokGiris()">
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Tarih</th>
+                <th>Ürün</th>
+                <th>Adet</th>
+                <th>Açıklama</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="tbody-giris">
+              <tr class="empty-row"><td colspan="5">Yükleniyor…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- STOK ÇIKIŞ SAYFASI -->
+    <div id="page-stok-cikis" style="display:none">
+      <div class="topbar">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="page-title">⬆️ Stok Çıkış</div>
+          <span class="badge-count" id="cikis-count">—</span>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-primary" onclick="openModal('cikis')">+ Çıkış Ekle</button>
+        </div>
+      </div>
+      <div class="content">
+        <div class="table-wrap">
+          <div class="table-header">
+            <input class="search-input" type="text" placeholder="Ürün ya da açıklama ara…" id="search-cikis" oninput="renderStokCikis()">
+            <select class="select-filter" id="filter-odendi" onchange="renderStokCikis()">
+              <option value="">Tümü</option>
+              <option value="EVET">Ödendi</option>
+              <option value="HAYIR">Ödenmedi</option>
+            </select>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Tarih</th>
+                <th>Ürün</th>
+                <th>Adet</th>
+                <th>Fiyat</th>
+                <th>Açıklama</th>
+                <th>Ödendi mi?</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="tbody-cikis">
+              <tr class="empty-row"><td colspan="7">Yükleniyor…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MODALS -->
+
+<!-- Ürün Modal -->
+<div class="modal-overlay" id="modal-urun">
+  <div class="modal">
+    <div class="modal-title">📦 Yeni Ürün Ekle</div>
+    <div class="form-group">
+      <label class="form-label">Ürün Adı *</label>
+      <input class="form-input" id="f-urun-adi" placeholder="örn. Ahşap Çerçeve">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Kategori</label>
+      <input class="form-input" id="f-kategori" placeholder="örn. Dekorasyon">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('urun')">İptal</button>
+      <button class="btn btn-primary" onclick="submitUrun()">Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- Stok Giriş Modal -->
+<div class="modal-overlay" id="modal-giris">
+  <div class="modal">
+    <div class="modal-title">⬇️ Stok Girişi Ekle</div>
+    <div class="form-group">
+      <label class="form-label">Tarih *</label>
+      <input class="form-input" id="f-giris-tarih" type="date">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Ürün *</label>
+      <select class="form-select" id="f-giris-urun">
+        <option value="">— Ürün seçin —</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Adet *</label>
+      <input class="form-input" id="f-giris-adet" type="number" min="1" placeholder="0">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Açıklama</label>
+      <textarea class="form-textarea" id="f-giris-aciklama" placeholder="İsteğe bağlı…"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('giris')">İptal</button>
+      <button class="btn btn-primary" onclick="submitGiris()">Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- Stok Çıkış Modal -->
+<div class="modal-overlay" id="modal-cikis">
+  <div class="modal">
+    <div class="modal-title">⬆️ Stok Çıkışı Ekle</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Tarih *</label>
+        <input class="form-input" id="f-cikis-tarih" type="date">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Adet *</label>
+        <input class="form-input" id="f-cikis-adet" type="number" min="1" placeholder="0">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Ürün *</label>
+      <select class="form-select" id="f-cikis-urun">
+        <option value="">— Ürün seçin —</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Fiyat (₺)</label>
+        <input class="form-input" id="f-cikis-fiyat" type="number" min="0" step="0.01" placeholder="0.00">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ödendi mi?</label>
+        <select class="form-select" id="f-cikis-odendi">
+          <option value="EVET">EVET</option>
+          <option value="HAYIR">HAYIR</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Açıklama</label>
+      <textarea class="form-textarea" id="f-cikis-aciklama" placeholder="İsteğe bağlı…"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('cikis')">İptal</button>
+      <button class="btn btn-primary" onclick="submitCikis()">Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// =====================================================================
+//  ⚙️  YAPILANDIRMA — Apps Script deploy URL'sini buraya yapıştırın
+// =====================================================================
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxxEz26CmKW5pIzgoYoYRNrRlrCgVKOcX3NQZYXTBpiC-r8H7R9DjBANrLgIwBExQsp/exec';
+const SHEET_ID = '1ORY8ISiWDjqDHhHsjBOhZNKbH52lsB70ZmPdIxPxEjA';
+const SHEETS_API = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values`;
+const API_KEY = ''; // İsterseniz Google Sheets API key ekleyebilirsiniz (gerekli değil, public sheets için)
+
+// =====================================================================
+//  STATE
+// =====================================================================
+let DATA = { urunler: [], giris: [], cikis: [] };
+
+// =====================================================================
+//  VERİ OKUMA (CSV yoluyla — API key gerekmez)
+// =====================================================================
+async function fetchSheet(sheetName) {
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`${sheetName} okunamadı`);
+  const text = await res.text();
+  return parseCSV(text);
+}
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  if (lines.length < 2) return [];
+  const headers = parseLine(lines[0]);
+  return lines.slice(1).map((line, i) => {
+    const vals = parseLine(line);
+    const obj = { _row: i + 2 };
+    headers.forEach((h, j) => { obj[h.trim()] = (vals[j] || '').trim(); });
+    return obj;
+  });
+}
+
+function parseLine(line) {
+  const result = [];
+  let cur = '', inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') { inQ = !inQ; }
+    else if (c === ',' && !inQ) { result.push(cur); cur = ''; }
+    else { cur += c; }
+  }
+  result.push(cur);
+  return result;
+}
+
+// =====================================================================
+//  VERİ YAZMA (Apps Script POST)
+// =====================================================================
+async function postAction(payload) {
+  const res = await fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    headers: { 'Content-Type': 'text/plain' } // CORS için text/plain
+  });
+  const json = await res.json();
+  if (json.status !== 'ok') throw new Error(json.message);
+  return json;
+}
+
+// =====================================================================
+//  UYGULAMA YÜKLENİYOR
+// =====================================================================
+async function loadAllData() {
+  const btn = document.getElementById('syncBtn');
+  const icon = document.getElementById('syncIcon');
+  btn.disabled = true;
+  icon.style.animation = 'spin 1s linear infinite';
+
+  try {
+    const [urunler, giris, cikis] = await Promise.all([
+      fetchSheet('ÜRÜNLER'),
+      fetchSheet('STOK_GIRIS'),
+      fetchSheet('STOK_CIKIS')
+    ]);
+    DATA.urunler = urunler;
+    DATA.giris = giris;
+    DATA.cikis = cikis;
+    updateAllViews();
+    toast('Veriler güncellendi ✓', 'success');
+  } catch(e) {
+    toast('Hata: ' + e.message, 'error');
+    console.error(e);
+  } finally {
+    btn.disabled = false;
+    icon.style.animation = '';
+  }
+}
+
+function updateAllViews() {
+  renderStats();
+  renderOzet();
+  renderUrunler();
+  renderStokGiris();
+  renderStokCikis();
+  fillUrunDropdowns();
+}
+
+// =====================================================================
+//  STATS
+// =====================================================================
+function calcNetStok() {
+  const stok = {};
+  DATA.urunler.forEach(u => { stok[u['ÜRÜN_ADI']] = 0; });
+  DATA.giris.forEach(g => {
+    const ad = g['ÜRÜN_ADI'], adet = parseInt(g['ADET']) || 0;
+    stok[ad] = (stok[ad] || 0) + adet;
+  });
+  DATA.cikis.forEach(c => {
+    const ad = c['ÜRÜN_ADI'], adet = parseInt(c['ADET']) || 0;
+    stok[ad] = (stok[ad] || 0) - adet;
+  });
+  return stok;
+}
+
+function renderStats() {
+  const stok = calcNetStok();
+  const totalGiris = DATA.giris.reduce((s, r) => s + (parseInt(r['ADET']) || 0), 0);
+  const totalCikis = DATA.cikis.reduce((s, r) => s + (parseInt(r['ADET']) || 0), 0);
+  const ciro = DATA.cikis.reduce((s, r) => s + ((parseFloat(r['FİYAT']) || 0) * (parseInt(r['ADET']) || 0)), 0);
+
+  document.getElementById('stat-urun').textContent = DATA.urunler.length;
+  document.getElementById('stat-giris').textContent = totalGiris.toLocaleString('tr-TR');
+  document.getElementById('stat-cikis').textContent = totalCikis.toLocaleString('tr-TR');
+  document.getElementById('stat-ciro').textContent = '₺' + ciro.toLocaleString('tr-TR', {maximumFractionDigits: 0});
+
+  // Uyarı: negatif stok
+  const negList = Object.entries(stok).filter(([, v]) => v < 0).map(([k]) => k);
+  const warnBar = document.getElementById('stok-warn-bar');
+  if (negList.length > 0) {
+    warnBar.classList.remove('hidden');
+    document.getElementById('stok-warn-text').textContent = 'Negatif stok uyarısı: ' + negList.join(', ');
+  } else {
+    warnBar.classList.add('hidden');
+  }
+}
+
+function renderOzet() {
+  const stok = calcNetStok();
+
+  // Stok listesi
+  const stokDiv = document.getElementById('ozet-stok-list');
+  const entries = Object.entries(stok).sort((a, b) => b[1] - a[1]);
+  if (entries.length === 0) { stokDiv.innerHTML = '<div class="loading" style="padding:20px">Veri yok</div>'; }
+  else {
+    stokDiv.innerHTML = entries.map(([name, val]) => `
+      <div class="ozet-row">
+        <span class="ozet-name">${esc(name)}</span>
+        <span class="ozet-val" style="color:${val < 0 ? 'var(--red)' : val === 0 ? 'var(--text3)' : 'var(--accent)'}">${val}</span>
+      </div>`).join('');
+  }
+
+  // Kategori bazlı satış
+  const katDiv = document.getElementById('ozet-kategori-list');
+  const katMap = {};
+  const urunKat = {};
+  DATA.urunler.forEach(u => { urunKat[u['ÜRÜN_ADI']] = u['KATEGORİ'] || 'Diğer'; });
+  DATA.cikis.forEach(c => {
+    const kat = urunKat[c['ÜRÜN_ADI']] || 'Diğer';
+    const tutar = (parseFloat(c['FİYAT']) || 0) * (parseInt(c['ADET']) || 0);
+    katMap[kat] = (katMap[kat] || 0) + tutar;
+  });
+  const katList = Object.entries(katMap).sort((a, b) => b[1] - a[1]);
+  if (katList.length === 0) { katDiv.innerHTML = '<div class="loading" style="padding:20px">Veri yok</div>'; }
+  else {
+    katDiv.innerHTML = katList.map(([kat, tutar]) => `
+      <div class="ozet-row">
+        <span class="ozet-name">${esc(kat)}</span>
+        <span class="ozet-val">₺${tutar.toLocaleString('tr-TR', {maximumFractionDigits:0})}</span>
+      </div>`).join('');
+  }
+}
+
+// =====================================================================
+//  TABLO RENDER
+// =====================================================================
+function renderUrunler() {
+  const q = (document.getElementById('search-urun')?.value || '').toLowerCase();
+  const stok = calcNetStok();
+  const rows = DATA.urunler.filter(r => {
+    const name = (r['ÜRÜN_ADI'] || '').toLowerCase();
+    const kat = (r['KATEGORİ'] || '').toLowerCase();
+    return !q || name.includes(q) || kat.includes(q);
+  });
+
+  document.getElementById('urun-count').textContent = rows.length;
+  const tbody = document.getElementById('tbody-urunler');
+  if (rows.length === 0) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="5">Kayıt bulunamadı</td></tr>';
+    return;
+  }
+  tbody.innerHTML = rows.map((r, i) => {
+    const net = stok[r['ÜRÜN_ADI']] || 0;
+    const cls = net < 0 ? 'red' : net === 0 ? 'amber' : 'green';
+    return `<tr>
+      <td class="td-muted td-mono">${i+1}</td>
+      <td><strong>${esc(r['ÜRÜN_ADI'])}</strong></td>
+      <td><span class="pill pill-gray">${esc(r['KATEGORİ'] || '—')}</span></td>
+      <td><span class="pill pill-${cls}">${net}</span></td>
+      <td><button class="del-btn" onclick="deleteRow('ÜRÜNLER', ${r._row})">✕</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderStokGiris() {
+  const q = (document.getElementById('search-giris')?.value || '').toLowerCase();
+  const rows = DATA.giris.filter(r => {
+    const name = (r['ÜRÜN_ADI'] || '').toLowerCase();
+    const ac = (r['AÇIKLAMA'] || '').toLowerCase();
+    return !q || name.includes(q) || ac.includes(q);
+  }).reverse();
+
+  document.getElementById('giris-count').textContent = rows.length;
+  const tbody = document.getElementById('tbody-giris');
+  if (rows.length === 0) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="5">Kayıt bulunamadı</td></tr>';
+    return;
+  }
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td class="td-mono td-muted">${esc(r['TARİH'])}</td>
+      <td>${esc(r['ÜRÜN_ADI'])}</td>
+      <td><span class="pill pill-green">+${esc(r['ADET'])}</span></td>
+      <td class="td-muted">${esc(r['AÇIKLAMA'] || '—')}</td>
+      <td><button class="del-btn" onclick="deleteRow('STOK_GIRIS', ${r._row})">✕</button></td>
+    </tr>`).join('');
+}
+
+function renderStokCikis() {
+  const q = (document.getElementById('search-cikis')?.value || '').toLowerCase();
+  const od = document.getElementById('filter-odendi')?.value || '';
+  const rows = DATA.cikis.filter(r => {
+    const name = (r['ÜRÜN_ADI'] || '').toLowerCase();
+    const ac = (r['AÇIKLAMA'] || '').toLowerCase();
+    const matchQ = !q || name.includes(q) || ac.includes(q);
+    const matchOd = !od || (r['ÖDENDİ_Mİ'] || '').toUpperCase() === od;
+    return matchQ && matchOd;
+  }).reverse();
+
+  document.getElementById('cikis-count').textContent = rows.length;
+  const tbody = document.getElementById('tbody-cikis');
+  if (rows.length === 0) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="7">Kayıt bulunamadı</td></tr>';
+    return;
+  }
+  tbody.innerHTML = rows.map(r => {
+    const odendi = (r['ÖDENDİ_Mİ'] || '').toUpperCase();
+    const odCls = odendi === 'EVET' ? 'pill-green' : 'pill-red';
+    const fiyat = parseFloat(r['FİYAT']) || 0;
+    const adet = parseInt(r['ADET']) || 0;
+    return `<tr>
+      <td class="td-mono td-muted">${esc(r['TARİH'])}</td>
+      <td>${esc(r['ÜRÜN_ADI'])}</td>
+      <td><span class="pill pill-red">${adet}</span></td>
+      <td class="td-mono">₺${fiyat.toLocaleString('tr-TR', {minimumFractionDigits:2})}</td>
+      <td class="td-muted">${esc(r['AÇIKLAMA'] || '—')}</td>
+      <td><span class="pill ${odCls}">${odendi || '—'}</span></td>
+      <td><button class="del-btn" onclick="deleteRow('STOK_CIKIS', ${r._row})">✕</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// =====================================================================
+//  FORM SUBMIT
+// =====================================================================
+async function submitUrun() {
+  const ad = document.getElementById('f-urun-adi').value.trim();
+  const kat = document.getElementById('f-kategori').value.trim();
+  if (!ad) { toast('Ürün adı zorunlu', 'error'); return; }
+
+  try {
+    await postAction({ action: 'addProduct', urun_adi: ad, kategori: kat });
+    toast('Ürün eklendi ✓', 'success');
+    closeModal('urun');
+    document.getElementById('f-urun-adi').value = '';
+    document.getElementById('f-kategori').value = '';
+    await loadAllData();
+  } catch(e) { toast('Hata: ' + e.message, 'error'); }
+}
+
+async function submitGiris() {
+  const tarih = document.getElementById('f-giris-tarih').value;
+  const urun = document.getElementById('f-giris-urun').value;
+  const adet = document.getElementById('f-giris-adet').value;
+  const ac = document.getElementById('f-giris-aciklama').value.trim();
+
+  if (!tarih || !urun || !adet) { toast('Tarih, ürün ve adet zorunlu', 'error'); return; }
+
+  try {
+    await postAction({ action: 'addStokGiris', tarih, urun_adi: urun, adet, aciklama: ac });
+    toast('Stok girişi eklendi ✓', 'success');
+    closeModal('giris');
+    document.getElementById('f-giris-adet').value = '';
+    document.getElementById('f-giris-aciklama').value = '';
+    await loadAllData();
+  } catch(e) { toast('Hata: ' + e.message, 'error'); }
+}
+
+async function submitCikis() {
+  const tarih = document.getElementById('f-cikis-tarih').value;
+  const urun = document.getElementById('f-cikis-urun').value;
+  const adet = document.getElementById('f-cikis-adet').value;
+  const fiyat = document.getElementById('f-cikis-fiyat').value;
+  const ac = document.getElementById('f-cikis-aciklama').value.trim();
+  const odendi = document.getElementById('f-cikis-odendi').value;
+
+  if (!tarih || !urun || !adet) { toast('Tarih, ürün ve adet zorunlu', 'error'); return; }
+
+  try {
+    await postAction({ action: 'addStokCikis', tarih, urun_adi: urun, adet, fiyat: fiyat || '0', aciklama: ac, odendi_mi: odendi });
+    toast('Stok çıkışı eklendi ✓', 'success');
+    closeModal('cikis');
+    document.getElementById('f-cikis-adet').value = '';
+    document.getElementById('f-cikis-fiyat').value = '';
+    document.getElementById('f-cikis-aciklama').value = '';
+    await loadAllData();
+  } catch(e) { toast('Hata: ' + e.message, 'error'); }
+}
+
+async function deleteRow(sheetName, rowIndex) {
+  if (!confirm(`${rowIndex}. satırı silmek istediğinizden emin misiniz?`)) return;
+  try {
+    await postAction({ action: 'deleteRow', sheetName, rowIndex });
+    toast('Satır silindi ✓', 'success');
+    await loadAllData();
+  } catch(e) { toast('Hata: ' + e.message, 'error'); }
+}
+
+// =====================================================================
+//  YARDIMCILAR
+// =====================================================================
+function fillUrunDropdowns() {
+  const options = ['<option value="">— Ürün seçin —</option>',
+    ...DATA.urunler.map(u => `<option value="${esc(u['ÜRÜN_ADI'])}">${esc(u['ÜRÜN_ADI'])}</option>`)
+  ].join('');
+  document.getElementById('f-giris-urun').innerHTML = options;
+  document.getElementById('f-cikis-urun').innerHTML = options;
+}
+
+function showPage(page) {
+  ['ozet','urunler','stok-giris','stok-cikis'].forEach(p => {
+    document.getElementById('page-' + p).style.display = p === page ? '' : 'none';
+    document.getElementById('nav-' + p)?.classList.toggle('active', p === page);
+  });
+}
+
+function openModal(type) {
+  // Tarihleri bugüne ayarla
+  const today = new Date().toISOString().split('T')[0];
+  if (type === 'giris') document.getElementById('f-giris-tarih').value = today;
+  if (type === 'cikis') document.getElementById('f-cikis-tarih').value = today;
+  document.getElementById('modal-' + type).classList.add('open');
+}
+function closeModal(type) {
+  document.getElementById('modal-' + type).classList.remove('open');
+}
+
+// Modal overlay tıklaması
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+});
+
+function esc(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+let toastTimer;
+function toast(msg, type = 'success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.className = ''; }, 3200);
+}
+
+// Başlangıç yüklemesi
+loadAllData();
+</script>
+</body>
+</html>
