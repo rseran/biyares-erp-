@@ -6,6 +6,7 @@
 <title>biyares — kolay ERP</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root {
   --bg: #f5f5f5;
@@ -350,8 +351,20 @@ td { padding: 10px 13px; font-size: 13px; }
 .gecmis-fis-tutar { font-family: var(--mono); font-size: 18px; font-weight: 800; color: var(--accent); }
 
 @media print {
-  body > * { display: none !important; }
-  .fis-onizleme { display: block !important; box-shadow: none; border: none; }
+  .app { display: block !important; }
+  .sidebar { display: none !important; }
+  .main { display: block !important; }
+  .page { display: none !important; }
+  #page-fis-onizleme { display: block !important; }
+  .topbar { display: none !important; }
+  .content { padding: 0 !important; }
+  .fis-preview-actions { display: none !important; }
+  .fis-onizleme { 
+    box-shadow: none !important; 
+    border: none !important;
+    width: 148mm !important;
+    margin: 0 auto !important;
+  }
 }
 </style>
 </head>
@@ -1682,12 +1695,12 @@ async function fisOnizle() {
       <table class="fis-on-table">
         <thead>
           <tr>
-            <th style="width:25px">#</th>
+            <th style="width:20px">#</th>
             <th>Açıklama</th>
-            <th style="width:35px">Adet</th>
-            <th style="width:35px">Birim</th>
-            <th style="width:55px" class="right">Birim Fiyat</th>
-            <th style="width:60px" class="right">Tutar</th>
+            <th style="width:35px;text-align:center">Adet</th>
+            <th style="width:35px;text-align:center">Birim</th>
+            <th style="width:55px;text-align:right;white-space:nowrap">Fiyat</th>
+            <th style="width:60px;text-align:right;white-space:nowrap">Tutar</th>
           </tr>
         </thead>
         <tbody>
@@ -1695,9 +1708,8 @@ async function fisOnizle() {
             <tr>
               <td>${i+1}</td>
               <td>${esc(u.aciklama)}</td>
-              <td>${u.adet}</td>
-              <td>${u.birim}</td>
-              <td class="right">${formatPara(u.birimFiyat, u.paraBirimi)}</td>
+              <td style="text-align:center">${u.adet} ${u.birim}</td>
+              <td style="text-align:right;white-space:nowrap">${formatPara(u.birimFiyat, u.paraBirimi)}</td>
               <td class="right">${formatPara(u.adet * u.birimFiyat, u.paraBirimi)}</td>
             </tr>
           `).join('')}
@@ -1737,17 +1749,32 @@ async function fisOnizle() {
 
 // PDF İndir
 function fisPDFIndir() {
-  window.print();
-  toast('Yazdır/PDF kaydet penceresi açıldı', 'success');
+  // Önizleme sayfasında olduğumuzdan emin ol
+  showPage('fis-onizleme');
+  setTimeout(() => {
+    window.print();
+  }, 300);
 }
 
 // Resim İndir
 async function fisResimIndir() {
   const el = document.getElementById('fis-onizleme-element');
-  if (!el) return;
+  if (!el) { toast('Önce önizleme oluşturun', 'error'); return; }
   try {
-    // html2canvas kütüphanesi yoksa alternatif
-    toast('Bunun için sayfayı yazdırıp "PDF olarak kaydet" seçeneğini kullanın', 'success');
+    toast('Resim hazırlanıyor...', 'success');
+    const canvas = await html2canvas(el, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      width: el.offsetWidth,
+      height: el.offsetHeight
+    });
+    const link = document.createElement('a');
+    const fisNo = document.getElementById('onizleme-baslik').textContent.split(' — ')[0];
+    link.download = fisNo + '.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    toast('Resim indirildi ✓', 'success');
   } catch(e) { toast('Hata: ' + e.message, 'error'); }
 }
 
