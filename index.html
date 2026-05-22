@@ -8,30 +8,30 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0f0e0c;
-  --surface: #1a1814;
-  --surface2: #242018;
-  --border: #2e2a22;
-  --border2: #3d3830;
+  --bg: #f5f5f5;
+  --surface: #ffffff;
+  --surface2: #f0f0f0;
+  --border: #e0e0e0;
+  --border2: #d0d0d0;
   --accent: #ff8c00;
   --accent-dim: #e07800;
   --accent-bg: rgba(255,140,0,0.08);
   --accent-bg2: rgba(255,140,0,0.15);
-  --red: #ff5252;
-  --red-bg: rgba(255,82,82,0.09);
-  --green: #3ddc84;
-  --green-bg: rgba(61,220,132,0.09);
-  --blue: #5b9cf6;
-  --blue-bg: rgba(91,156,246,0.09);
-  --amber: #ffb347;
-  --text: #f0ebe0;
-  --text2: #9a9080;
-  --text3: #5a5248;
+  --red: #e53935;
+  --red-bg: rgba(229,57,53,0.08);
+  --green: #2e7d32;
+  --green-bg: rgba(46,125,50,0.08);
+  --blue: #1565c0;
+  --blue-bg: rgba(21,101,192,0.08);
+  --amber: #e65100;
+  --text: #1a1a1a;
+  --text2: #555555;
+  --text3: #999999;
   --radius: 12px;
   --radius-lg: 18px;
   --font: 'Syne', sans-serif;
   --mono: 'DM Mono', monospace;
-  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --shadow: 0 4px 24px rgba(0,0,0,0.08);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; }
@@ -371,12 +371,15 @@ td { padding: 11px 14px; font-size: 13px; }
     <div class="detay-header">
       <button class="back-btn" onclick="showPage('urunler')">← Ürünlere Dön</button>
       <div class="detay-urun-adi" id="detay-urun-adi">—</div>
-      <div style="display:flex;align-items:center;gap:10px;margin-top:6px">
-        <span class="detay-stok-badge">
-          <span>Mevcut Stok:</span>
-          <strong id="detay-stok-val">—</strong>
-        </span>
-        <span id="detay-kat" style="font-size:11px;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:1px"></span>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="detay-stok-badge">
+            <span>Mevcut Stok:</span>
+            <strong id="detay-stok-val">—</strong>
+          </span>
+          <span id="detay-kat" style="font-size:11px;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:1px"></span>
+        </div>
+        <button class="btn btn-red btn-sm" onclick="deleteUrun()">🗑 Ürünü Sil</button>
       </div>
     </div>
     <div class="content">
@@ -936,6 +939,19 @@ function toast(msg, type = 'success') {
   el.textContent = msg; el.className = 'show ' + type;
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => { el.className = ''; }, 3000);
+}
+
+async function deleteUrun() {
+  if (!activeUrun) return;
+  const ad = activeUrun['ÜRÜN_ADI'];
+  if (!confirm(`"${ad}" ürününü silmek istediğinizden emin misiniz?\n\nNot: Stok giriş/çıkış kayıtları silinmez.`)) return;
+  try {
+    await postAction({ action: 'deleteRow', sheetName: 'ÜRÜNLER', rowIndex: activeUrun._row });
+    toast('Ürün silindi ✓', 'success');
+    activeUrun = null;
+    await loadAllData();
+    showPage('urunler');
+  } catch(e) { toast('Hata: ' + e.message, 'error'); }
 }
 
 // BAŞLAT
