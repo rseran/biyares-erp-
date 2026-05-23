@@ -397,6 +397,12 @@ td { padding: 10px 13px; font-size: 13px; }
       </button>
     </div>
     <div class="nav-section">
+      <span class="nav-section-title">🚚 Kargo</span>
+      <button class="nav-item" id="nav-kargo" onclick="kargoYakinda()">
+        <span class="nav-icon">📦</span> Kargo Gönder
+      </button>
+    </div>
+    <div class="nav-section">
       <span class="nav-section-title">📒 Cari Hesap</span>
       <button class="nav-item" id="nav-borc-musteriler" onclick="showPage('borc-musteriler')">
         <span class="nav-icon">👥</span> Müşteriler
@@ -886,6 +892,34 @@ td { padding: 10px 13px; font-size: 13px; }
       <button class="btn btn-ghost" onclick="closeModal('borc-duzenle')">İptal</button>
       <button class="btn btn-primary" onclick="submitBorcDuzenle()">Güncelle</button>
     </div>
+  </div>
+</div>
+
+
+<!-- YAKINDA POPUP -->
+<div class="modal-overlay" id="modal-yakinda">
+  <div class="modal" style="text-align:center;max-width:380px">
+    <div style="font-size:52px;margin-bottom:16px">🚀</div>
+    <div style="font-size:22px;font-weight:800;margin-bottom:8px">Yakında!</div>
+    <div style="font-size:14px;color:var(--text2);margin-bottom:20px;line-height:1.6">
+      <strong>Kargo Gönder</strong> modülü üzerinde çalışıyoruz.<br>
+      Çok yakında tüm kargo şirketlerine tek ekrandan gönderi oluşturabileceksiniz.
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px">
+      <div style="display:flex;align-items:center;gap:10px;background:var(--surface2);border-radius:var(--radius);padding:10px 14px;font-size:13px">
+        <span>📍</span> <span>Gönderici & Alıcı adres yönetimi</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;background:var(--surface2);border-radius:var(--radius);padding:10px 14px;font-size:13px">
+        <span>🏷</span> <span>Tüm kargo şirketleri tek ekranda</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;background:var(--surface2);border-radius:var(--radius);padding:10px 14px;font-size:13px">
+        <span>📊</span> <span>Fiyat karşılaştırma & en uygun seçenek</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;background:var(--surface2);border-radius:var(--radius);padding:10px 14px;font-size:13px">
+        <span>🔍</span> <span>Gerçek zamanlı gönderi takibi</span>
+      </div>
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="closeModal('yakinda')">Tamam, Bekliyorum!</button>
   </div>
 </div>
 
@@ -1903,6 +1937,10 @@ setTimeout(() => {
   fillMusteriDatalist();
   if (fisUrunler.length === 0) fisUrunEkle();
 }, 500);
+
+function kargoYakinda() {
+  document.getElementById('modal-yakinda').classList.add('open');
+}
 
 loadAllData();
 </script>
