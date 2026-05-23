@@ -2036,10 +2036,9 @@ async function fisOnizle() {
           <tr>
             <th style="width:20px">#</th>
             <th>Açıklama</th>
-            <th style="width:35px;text-align:center">Adet</th>
-            <th style="width:35px;text-align:center">Birim</th>
+            <th style="width:50px;text-align:center">Adet/Birim</th>
             <th style="width:55px;text-align:right;white-space:nowrap">Fiyat</th>
-            <th style="width:60px;text-align:right;white-space:nowrap">Tutar</th>
+            <th style="width:65px;text-align:right;white-space:nowrap">Tutar</th>
           </tr>
         </thead>
         <tbody>
@@ -2049,7 +2048,7 @@ async function fisOnizle() {
               <td>${esc(u.aciklama)}</td>
               <td style="text-align:center">${u.adet} ${u.birim}</td>
               <td style="text-align:right;white-space:nowrap">${formatPara(u.birimFiyat, u.paraBirimi)}</td>
-              <td class="right">${formatPara(u.adet * u.birimFiyat, u.paraBirimi)}</td>
+              <td style="text-align:right;white-space:nowrap">${formatPara(u.adet * u.birimFiyat, u.paraBirimi)}</td>
             </tr>
           `).join('')}
         </tbody>
