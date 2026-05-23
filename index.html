@@ -54,23 +54,61 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .logo-mark { font-size: 22px; font-weight: 800; letter-spacing: -1px; color: var(--accent); }
 .logo-sub { font-size: 10px; color: var(--text3); font-family: var(--mono); letter-spacing: 2.5px; text-transform: uppercase; margin-top: 3px; }
 
-.nav { padding: 12px 10px; flex: 1; }
-.nav-section { margin-bottom: 6px; }
-.nav-section-title {
-  font-size: 9px; font-family: var(--mono); letter-spacing: 2px;
-  text-transform: uppercase; color: var(--text3);
-  padding: 8px 12px 4px; display: block;
+.nav { padding: 10px 10px; flex: 1; overflow-y: auto; }
+
+/* Modül başlığı — tıklanabilir accordion */
+.nav-module { margin-bottom: 4px; border-radius: var(--radius); overflow: hidden; border: 1px solid transparent; transition: border-color 0.15s; }
+.nav-module.open { border-color: var(--border); background: var(--surface2); }
+.nav-module-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 11px 14px; cursor: pointer;
+  font-size: 13px; font-weight: 700; color: var(--text2);
+  border: none; background: none; width: 100%; text-align: left;
+  border-radius: var(--radius); transition: all 0.15s;
 }
+.nav-module-header:hover { background: var(--surface2); color: var(--text); }
+.nav-module.open .nav-module-header { color: var(--accent); background: var(--accent-bg); }
+.nav-module-left { display: flex; align-items: center; gap: 10px; }
+.nav-module-icon {
+  width: 30px; height: 30px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; background: var(--surface2); flex-shrink: 0;
+  transition: background 0.15s;
+}
+.nav-module.open .nav-module-icon { background: var(--accent-bg2); }
+.nav-module-name { font-size: 13px; font-weight: 700; }
+.nav-module-arrow {
+  font-size: 10px; color: var(--text3); transition: transform 0.2s;
+  font-family: var(--mono);
+}
+.nav-module.open .nav-module-arrow { transform: rotate(90deg); color: var(--accent); }
+
+/* Alt menü öğeleri */
+.nav-sub { display: none; padding: 4px 8px 8px; }
+.nav-module.open .nav-sub { display: block; }
 .nav-item {
-  display: flex; align-items: center; gap: 9px;
-  padding: 9px 12px; border-radius: var(--radius);
-  cursor: pointer; font-size: 13px; font-weight: 700;
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; border-radius: 8px;
+  cursor: pointer; font-size: 13px; font-weight: 600;
   color: var(--text2); transition: all 0.15s;
   margin-bottom: 2px; border: none; background: none; width: 100%; text-align: left;
 }
-.nav-item:hover { background: var(--surface2); color: var(--text); }
-.nav-item.active { background: var(--accent-bg2); color: var(--accent); }
+.nav-item:hover { background: var(--accent-bg); color: var(--text); }
+.nav-item.active { background: var(--accent-bg2); color: var(--accent); font-weight: 700; }
+.nav-item-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border2); flex-shrink: 0; transition: background 0.15s; }
+.nav-item.active .nav-item-dot { background: var(--accent); }
 .nav-icon { font-size: 15px; width: 20px; text-align: center; }
+
+/* Tek öğeli modül (Kargo - yakında) */
+.nav-item-soon {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 12px; border-radius: 8px; cursor: pointer;
+  font-size: 13px; font-weight: 600; color: var(--text3);
+  margin-bottom: 2px; border: none; background: none; width: 100%; text-align: left;
+  transition: all 0.15s;
+}
+.nav-item-soon:hover { background: var(--surface2); color: var(--text2); }
+.soon-badge { font-size: 9px; font-family: var(--mono); letter-spacing: 1px; background: var(--amber-bg, rgba(230,81,0,0.1)); color: var(--amber); border-radius: 4px; padding: 2px 6px; font-weight: 700; }
 
 .sidebar-footer { padding: 12px; border-top: 1px solid var(--border); }
 .sync-btn {
@@ -366,6 +404,87 @@ td { padding: 10px 13px; font-size: 13px; }
     margin: 0 auto !important;
   }
 }
+
+/* ===== DASHBOARD ===== */
+.dashboard-header {
+  background: linear-gradient(135deg, var(--accent) 0%, #ff6b00 100%);
+  padding: 28px 28px 24px;
+  color: #fff;
+}
+.dashboard-header h1 { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+.dashboard-header p { font-size: 13px; opacity: 0.85; }
+.dashboard-tarih { font-size: 11px; opacity: 0.7; font-family: var(--mono); margin-top: 6px; }
+
+.dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+.dash-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 18px 20px;
+  cursor: pointer; transition: all 0.15s;
+}
+.dash-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); border-color: var(--border2); }
+.dash-card-label { font-size: 10px; font-family: var(--mono); letter-spacing: 1.5px; text-transform: uppercase; color: var(--text3); margin-bottom: 8px; }
+.dash-card-val { font-size: 26px; font-weight: 800; font-family: var(--mono); }
+.dash-card-val.orange { color: var(--accent); }
+.dash-card-val.red { color: var(--red); }
+.dash-card-val.green { color: var(--green); }
+.dash-card-val.blue { color: var(--blue); }
+.dash-card-sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+.dash-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+.dash-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 20px; }
+.dash-section-title { font-size: 13px; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
+.dash-section-title a { font-size: 11px; color: var(--accent); cursor: pointer; font-weight: 600; text-decoration: none; }
+.dash-list-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.dash-list-item:last-child { border-bottom: none; }
+.dash-list-name { font-weight: 600; }
+.dash-list-sub { font-size: 11px; color: var(--text3); font-family: var(--mono); }
+.dash-list-val { font-family: var(--mono); font-weight: 700; }
+
+/* Hızlı işlemler */
+.hizli-islem-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+.hizli-islem-btn {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 14px 10px;
+  cursor: pointer; transition: all 0.15s; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.hizli-islem-btn:hover { border-color: var(--accent-dim); background: var(--accent-bg); transform: translateY(-2px); }
+.hizli-islem-icon { font-size: 22px; }
+.hizli-islem-label { font-size: 11px; font-weight: 700; color: var(--text2); }
+
+/* BİLDİRİMLER */
+.bildirim-badge {
+  background: var(--red); color: #fff;
+  font-size: 9px; font-family: var(--mono); font-weight: 700;
+  width: 16px; height: 16px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  position: absolute; top: -4px; right: -4px;
+}
+.bildirim-btn-wrap { position: relative; display: inline-flex; }
+.bildirim-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 0; border-bottom: 1px solid var(--border);
+}
+.bildirim-item:last-child { border-bottom: none; }
+.bildirim-icon {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0;
+}
+.bildirim-icon.warn { background: rgba(230,81,0,0.1); }
+.bildirim-icon.info { background: var(--blue-bg); }
+.bildirim-icon.success { background: var(--green-bg); }
+.bildirim-icerik { flex: 1; }
+.bildirim-baslik { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+.bildirim-aciklama { font-size: 12px; color: var(--text2); line-height: 1.4; }
+.bildirim-tarih { font-size: 10px; color: var(--text3); font-family: var(--mono); margin-top: 4px; }
+.bildirim-empty { text-align: center; padding: 30px; color: var(--text3); font-size: 13px; }
+
+@media(max-width:900px) {
+  .dash-grid { grid-template-columns: repeat(2, 1fr); }
+  .hizli-islem-grid { grid-template-columns: repeat(2, 1fr); }
+  .dash-row { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
@@ -373,46 +492,100 @@ td { padding: 10px 13px; font-size: 13px; }
 
 <!-- SIDEBAR -->
 <aside class="sidebar">
-  <div class="logo">
+  <div class="logo" style="cursor:pointer" onclick="showPage('dashboard')">
     <div class="logo-mark">biyares</div>
     <div class="logo-sub">kolay ERP</div>
   </div>
   <nav class="nav">
-    <div class="nav-section">
-      <span class="nav-section-title">📦 Stok Takip</span>
-      <button class="nav-item active" id="nav-stok-urunler" onclick="showPage('stok-urunler')">
-        <span class="nav-icon">🗂</span> Ürünler
+
+    <!-- DASHBOARD -->
+    <button class="nav-item" id="nav-dashboard" onclick="showPage('dashboard')" style="margin-bottom:8px;padding:10px 14px;border-radius:var(--radius);background:var(--surface2)">
+      <span style="font-size:15px">🏠</span>
+      <span style="font-weight:700;font-size:13px">Ana Sayfa</span>
+    </button>
+
+    <!-- STOK TAKİP -->
+    <div class="nav-module" id="mod-stok">
+      <button class="nav-module-header" onclick="toggleModule('mod-stok')">
+        <div class="nav-module-left">
+          <div class="nav-module-icon">📦</div>
+          <span class="nav-module-name">Stok Takip</span>
+        </div>
+        <span class="nav-module-arrow">›</span>
       </button>
-      <button class="nav-item" id="nav-stok-ozet" onclick="showPage('stok-ozet')">
-        <span class="nav-icon">📊</span> Özet
-      </button>
+      <div class="nav-sub">
+        <button class="nav-item active" id="nav-stok-urunler" onclick="showPage('stok-urunler')">
+          <span class="nav-item-dot"></span> Ürünler
+        </button>
+        <button class="nav-item" id="nav-stok-ozet" onclick="showPage('stok-ozet')">
+          <span class="nav-item-dot"></span> Özet
+        </button>
+      </div>
     </div>
-    <div class="nav-section">
-      <span class="nav-section-title">🧾 Sipariş Fişi</span>
-      <button class="nav-item" id="nav-fis-yeni" onclick="showPage('fis-yeni')">
-        <span class="nav-icon">➕</span> Yeni Fiş
+
+    <!-- SİPARİŞ FİŞİ -->
+    <div class="nav-module" id="mod-fis">
+      <button class="nav-module-header" onclick="toggleModule('mod-fis')">
+        <div class="nav-module-left">
+          <div class="nav-module-icon">🧾</div>
+          <span class="nav-module-name">Sipariş Fişi</span>
+        </div>
+        <span class="nav-module-arrow">›</span>
       </button>
-      <button class="nav-item" id="nav-fis-gecmis" onclick="showPage('fis-gecmis')">
-        <span class="nav-icon">📋</span> Geçmiş Fişler
-      </button>
+      <div class="nav-sub">
+        <button class="nav-item" id="nav-fis-yeni" onclick="showPage('fis-yeni')">
+          <span class="nav-item-dot"></span> Yeni Fiş
+        </button>
+        <button class="nav-item" id="nav-fis-gecmis" onclick="showPage('fis-gecmis')">
+          <span class="nav-item-dot"></span> Geçmiş Fişler
+        </button>
+      </div>
     </div>
-    <div class="nav-section">
-      <span class="nav-section-title">🚚 Kargo</span>
-      <button class="nav-item" id="nav-kargo" onclick="kargoYakinda()">
-        <span class="nav-icon">📦</span> Kargo Gönder
+
+    <!-- KARGO -->
+    <div class="nav-module" id="mod-kargo">
+      <button class="nav-module-header" onclick="toggleModule('mod-kargo')">
+        <div class="nav-module-left">
+          <div class="nav-module-icon">🚚</div>
+          <span class="nav-module-name">Kargo</span>
+        </div>
+        <span class="nav-module-arrow">›</span>
       </button>
+      <div class="nav-sub">
+        <button class="nav-item-soon" onclick="kargoYakinda()">
+          <span>Kargo Gönder</span>
+          <span class="soon-badge">YAKINDA</span>
+        </button>
+      </div>
     </div>
-    <div class="nav-section">
-      <span class="nav-section-title">📒 Cari Hesap</span>
-      <button class="nav-item" id="nav-borc-musteriler" onclick="showPage('borc-musteriler')">
-        <span class="nav-icon">👥</span> Müşteriler
+
+    <!-- CARİ HESAP -->
+    <div class="nav-module" id="mod-cari">
+      <button class="nav-module-header" onclick="toggleModule('mod-cari')">
+        <div class="nav-module-left">
+          <div class="nav-module-icon">📒</div>
+          <span class="nav-module-name">Cari Hesap</span>
+        </div>
+        <span class="nav-module-arrow">›</span>
       </button>
-      <button class="nav-item" id="nav-borc-ozet" onclick="showPage('borc-ozet')">
-        <span class="nav-icon">📈</span> Özet
-      </button>
+      <div class="nav-sub">
+        <button class="nav-item" id="nav-borc-musteriler" onclick="showPage('borc-musteriler')">
+          <span class="nav-item-dot"></span> Müşteriler
+        </button>
+        <button class="nav-item" id="nav-borc-ozet" onclick="showPage('borc-ozet')">
+          <span class="nav-item-dot"></span> Özet
+        </button>
+      </div>
     </div>
+
   </nav>
   <div class="sidebar-footer">
+    <button class="btn btn-ghost" style="width:100%;justify-content:center;margin-bottom:8px;position:relative" onclick="showPage('bildirimler')">
+      <div class="bildirim-btn-wrap">
+        🔔 Bildirimler
+        <span class="bildirim-badge" id="bildirim-badge" style="display:none">0</span>
+      </div>
+    </button>
     <button class="sync-btn" id="syncBtn" onclick="loadAllData()">
       <svg id="syncIcon" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
         <path d="M3 12a9 9 0 019-9 9.75 9.75 0 016.74 2.74L21 8"/><path d="M21 3v5h-5"/>
@@ -425,8 +598,109 @@ td { padding: 10px 13px; font-size: 13px; }
 
 <main class="main">
 
+  <!-- ===== DASHBOARD ===== -->
+  <div id="page-dashboard" class="page active">
+    <div class="dashboard-header">
+      <h1 id="dash-selam">Merhaba! 👋</h1>
+      <p>İşte bugünkü durumunuz</p>
+      <div class="dashboard-tarih" id="dash-tarih"></div>
+    </div>
+    <div class="content">
+
+      <!-- Hızlı İşlemler -->
+      <div style="margin-bottom:6px;font-size:11px;font-family:var(--mono);letter-spacing:1.5px;text-transform:uppercase;color:var(--text3)">Hızlı İşlemler</div>
+      <div class="hizli-islem-grid" style="margin-bottom:24px">
+        <div class="hizli-islem-btn" onclick="showPage('stok-urunler')">
+          <div class="hizli-islem-icon">📦</div>
+          <div class="hizli-islem-label">Stok Takip</div>
+        </div>
+        <div class="hizli-islem-btn" onclick="showPage('fis-yeni')">
+          <div class="hizli-islem-icon">🧾</div>
+          <div class="hizli-islem-label">Yeni Fiş</div>
+        </div>
+        <div class="hizli-islem-btn" onclick="showPage('borc-musteriler')">
+          <div class="hizli-islem-icon">👥</div>
+          <div class="hizli-islem-label">Cari Hesap</div>
+        </div>
+        <div class="hizli-islem-btn" onclick="kargoYakinda()">
+          <div class="hizli-islem-icon">🚚</div>
+          <div class="hizli-islem-label">Kargo</div>
+        </div>
+      </div>
+
+      <!-- Özet Kartları -->
+      <div class="dash-grid" style="margin-bottom:24px" id="dash-cards">
+        <div class="dash-card" onclick="showPage('stok-urunler')">
+          <div class="dash-card-label">Toplam Ürün</div>
+          <div class="dash-card-val blue" id="dash-urun-sayisi">—</div>
+          <div class="dash-card-sub">kayıtlı ürün</div>
+        </div>
+        <div class="dash-card" onclick="showPage('borc-musteriler')">
+          <div class="dash-card-label">Toplam Alacak</div>
+          <div class="dash-card-val red" id="dash-toplam-alacak">—</div>
+          <div class="dash-card-sub" id="dash-musteri-sayisi">müşteri</div>
+        </div>
+        <div class="dash-card" onclick="showPage('fis-gecmis')">
+          <div class="dash-card-label">Toplam Fiş</div>
+          <div class="dash-card-val orange" id="dash-fis-sayisi">—</div>
+          <div class="dash-card-sub">oluşturulmuş fiş</div>
+        </div>
+        <div class="dash-card" onclick="showPage('bildirimler')">
+          <div class="dash-card-label">Bildirimler</div>
+          <div class="dash-card-val" id="dash-bildirim-sayisi" style="color:var(--amber)">—</div>
+          <div class="dash-card-sub">bekleyen uyarı</div>
+        </div>
+      </div>
+
+      <!-- Alt Satır -->
+      <div class="dash-row">
+        <!-- Son Müşteriler -->
+        <div class="dash-section">
+          <div class="dash-section-title">
+            👥 En Yüksek Bakiyeli Müşteriler
+            <a onclick="showPage('borc-musteriler')">Tümü →</a>
+          </div>
+          <div id="dash-musteri-list"><div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
+        </div>
+
+        <!-- Son Fişler -->
+        <div class="dash-section">
+          <div class="dash-section-title">
+            🧾 Son Fişler
+            <a onclick="showPage('fis-gecmis')">Tümü →</a>
+          </div>
+          <div id="dash-fis-list"><div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
+        </div>
+      </div>
+
+      <!-- Bildirimler önizleme -->
+      <div class="dash-section" id="dash-bildirim-wrap">
+        <div class="dash-section-title">
+          🔔 Uyarılar & Bildirimler
+          <a onclick="showPage('bildirimler')">Tümü →</a>
+        </div>
+        <div id="dash-bildirim-preview"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== BİLDİRİMLER ===== -->
+  <div id="page-bildirimler" class="page">
+    <div class="topbar">
+      <div class="page-title">🔔 Bildirimler</div>
+      <button class="btn btn-ghost btn-sm" onclick="bildirimleriOku()">Tümünü Okundu İşaretle</button>
+    </div>
+    <div class="content">
+      <div id="bildirim-list-wrap">
+        <div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+      </div>
+    </div>
+  </div>
+
+
   <!-- ===== STOK: ÜRÜNLER ===== -->
-  <div id="page-stok-urunler" class="page active">
+  <div id="page-stok-urunler" class="page">
     <div class="topbar"><div class="page-title">📦 Ürünler</div></div>
     <div class="content">
       <div id="urun-grid-wrap"><div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
@@ -1001,7 +1275,7 @@ async function loadAllData() {
     renderFisGecmis();
     renderUrunGrid(); renderStokOzet();
     renderMusteriGrid(); renderBorcOzet();
-    renderFisGecmis(); fillMusteriDatalist();
+    renderFisGecmis(); fillMusteriDatalist(); renderDashboard();
     if (activeUrun) { activeUrun=DATA.urunler.find(x=>x['ÜRÜN_ADI']===activeUrun['ÜRÜN_ADI'])||activeUrun; updateStokDetayHeader(); renderStokHareketler(); }
     if (activeMusteri) { activeMusteri=DATA.musteriler.find(x=>x['İSİM']===activeMusteri['İSİM'])||activeMusteri; updateMusteriDetayHeader(); renderBorcHareketler(); }
     toast('Veriler güncellendi ✓','success');
@@ -1485,8 +1759,39 @@ function showPage(page) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  const map={'stok-urunler':'nav-stok-urunler','stok-detay':'nav-stok-urunler','stok-hareketler':'nav-stok-urunler','stok-ozet':'nav-stok-ozet','borc-musteriler':'nav-borc-musteriler','borc-detay':'nav-borc-musteriler','borc-hareketler':'nav-borc-musteriler','borc-ozet':'nav-borc-ozet','fis-yeni':'nav-fis-yeni','fis-gecmis':'nav-fis-gecmis','fis-onizleme':'nav-fis-yeni'};
+  const map={
+    'dashboard':'nav-dashboard','bildirimler':'nav-dashboard',
+    'stok-urunler':'nav-stok-urunler','stok-detay':'nav-stok-urunler',
+    'stok-hareketler':'nav-stok-urunler','stok-ozet':'nav-stok-ozet',
+    'borc-musteriler':'nav-borc-musteriler','borc-detay':'nav-borc-musteriler',
+    'borc-hareketler':'nav-borc-musteriler','borc-ozet':'nav-borc-ozet',
+    'fis-yeni':'nav-fis-yeni','fis-gecmis':'nav-fis-gecmis','fis-onizleme':'nav-fis-yeni'
+  };
   if (map[page]) document.getElementById(map[page])?.classList.add('active');
+
+  // İlgili modülü aç
+  const modMap = {
+    'stok-urunler':'mod-stok','stok-detay':'mod-stok','stok-hareketler':'mod-stok','stok-ozet':'mod-stok',
+    'borc-musteriler':'mod-cari','borc-detay':'mod-cari','borc-hareketler':'mod-cari','borc-ozet':'mod-cari',
+    'fis-yeni':'mod-fis','fis-gecmis':'mod-fis','fis-onizleme':'mod-fis'
+  };
+  if (modMap[page]) openModule(modMap[page]);
+  if (page === 'bildirimler') renderBildirimSayfasi();
+  if (page === 'dashboard') renderDashboard();
+}
+
+function toggleModule(id) {
+  const mod = document.getElementById(id);
+  const isOpen = mod.classList.contains('open');
+  // Hepsini kapat
+  document.querySelectorAll('.nav-module').forEach(m => m.classList.remove('open'));
+  // Kapalıysa aç
+  if (!isOpen) mod.classList.add('open');
+}
+
+function openModule(id) {
+  document.querySelectorAll('.nav-module').forEach(m => m.classList.remove('open'));
+  document.getElementById(id)?.classList.add('open');
 }
 function openModal(type) {
   const today=new Date().toISOString().split('T')[0];
@@ -1937,6 +2242,218 @@ setTimeout(() => {
   fillMusteriDatalist();
   if (fisUrunler.length === 0) fisUrunEkle();
 }, 500);
+
+
+// ══════════════════════════════════════
+//  DASHBOARD & BİLDİRİMLER
+// ══════════════════════════════════════
+let bildirimler = [];
+
+function renderDashboard() {
+  // Tarih
+  const now = new Date();
+  const gunler = ['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'];
+  const aylar = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+  document.getElementById('dash-tarih').textContent = 
+    gunler[now.getDay()] + ', ' + now.getDate() + ' ' + aylar[now.getMonth()] + ' ' + now.getFullYear();
+
+  // Selamlama
+  const saat = now.getHours();
+  const selam = saat < 12 ? 'Günaydın! ☀️' : saat < 18 ? 'İyi günler! 👋' : 'İyi akşamlar! 🌙';
+  document.getElementById('dash-selam').textContent = selam;
+
+  // Özet kartlar
+  document.getElementById('dash-urun-sayisi').textContent = DATA.urunler.length;
+  
+  const toplamAlacak = DATA.musteriler.reduce((s,m) => s + Math.max(0, calcMusteriBakiye(m['İSİM'])), 0);
+  document.getElementById('dash-toplam-alacak').textContent = '₺' + toplamAlacak.toLocaleString('tr-TR', {maximumFractionDigits:0});
+  document.getElementById('dash-musteri-sayisi').textContent = DATA.musteriler.length + ' müşteri';
+
+  // Benzersiz fiş sayısı
+  const fisSayisi = new Set(DATA.fisler.map(f => f['FİŞ_NO'])).size;
+  document.getElementById('dash-fis-sayisi').textContent = fisSayisi;
+
+  // Bildirimleri hesapla
+  hesaplaBildirimler();
+  document.getElementById('dash-bildirim-sayisi').textContent = bildirimler.filter(b => !b.okundu).length || '—';
+
+  // Müşteri listesi
+  renderDashMusteriler();
+  
+  // Son fişler
+  renderDashFisler();
+  
+  // Bildirim önizleme
+  renderDashBildirimler();
+}
+
+function renderDashMusteriler() {
+  const el = document.getElementById('dash-musteri-list');
+  const sorted = [...DATA.musteriler]
+    .map(m => ({ m, bakiye: calcMusteriBakiye(m['İSİM']) }))
+    .filter(x => x.bakiye > 0)
+    .sort((a,b) => b.bakiye - a.bakiye)
+    .slice(0, 5);
+  
+  if (!sorted.length) { el.innerHTML = '<div class="bildirim-empty">Alacak kaydı yok</div>'; return; }
+  el.innerHTML = sorted.map(({m, bakiye}) => `
+    <div class="dash-list-item" style="cursor:pointer" onclick="openMusteri('${esc(m['İSİM'])}')">
+      <div>
+        <div class="dash-list-name">${esc(m['İSİM'])}</div>
+        <div class="dash-list-sub">📍 ${esc(m['ŞEHİR']||'—')}</div>
+      </div>
+      <div class="dash-list-val" style="color:var(--red)">₺${bakiye.toLocaleString('tr-TR',{maximumFractionDigits:0})}</div>
+    </div>
+  `).join('');
+}
+
+function renderDashFisler() {
+  const el = document.getElementById('dash-fis-list');
+  const fisMap = {};
+  DATA.fisler.forEach(r => {
+    if (!fisMap[r['FİŞ_NO']]) fisMap[r['FİŞ_NO']] = { no: r['FİŞ_NO'], tarih: r['TARİH'], musteri: r['MÜŞTERİ'], toplam: parseFloat(r['TOPLAM'])||0 };
+  });
+  const sonFisler = Object.values(fisMap).sort((a,b) => b.tarih.localeCompare(a.tarih)).slice(0,5);
+  
+  if (!sonFisler.length) { el.innerHTML = '<div class="bildirim-empty">Henüz fiş yok</div>'; return; }
+  el.innerHTML = sonFisler.map(f => `
+    <div class="dash-list-item">
+      <div>
+        <div class="dash-list-name">${esc(f.musteri)}</div>
+        <div class="dash-list-sub">${esc(f.no)} • ${esc(f.tarih)}</div>
+      </div>
+      <div class="dash-list-val" style="color:var(--accent)">₺${f.toplam.toLocaleString('tr-TR',{maximumFractionDigits:0})}</div>
+    </div>
+  `).join('');
+}
+
+function hesaplaBildirimler() {
+  bildirimler = [];
+  const today = new Date();
+  const todayStr = today.toISOString().split('T')[0];
+
+  // 1. 30 günden fazla ödeme yapmayan müşteriler
+  DATA.musteriler.forEach(m => {
+    const isim = m['İSİM'];
+    const bakiye = calcMusteriBakiye(isim);
+    if (bakiye <= 0) return;
+
+    const odemeler = DATA.odemeler.filter(r => r['MÜŞTERİ'] === isim).map(r => r['TARİH']).filter(Boolean).sort();
+    const sonOdeme = odemeler.length ? odemeler[odemeler.length-1] : null;
+    
+    if (sonOdeme) {
+      const fark = Math.floor((today - new Date(sonOdeme)) / (1000*60*60*24));
+      if (fark >= 30) {
+        bildirimler.push({
+          id: 'odeme-' + isim,
+          tip: 'warn',
+          icon: '⚠️',
+          baslik: isim + ' — ' + fark + ' gündür ödeme yok',
+          aciklama: 'Toplam bakiye: ₺' + bakiye.toLocaleString('tr-TR',{maximumFractionDigits:0}) + ' • Son ödeme: ' + sonOdeme,
+          tarih: todayStr,
+          okundu: false,
+          action: () => openMusteri(isim)
+        });
+      }
+    } else {
+      // Hiç ödeme yapmamış, bakiyesi var
+      const satislar = DATA.satislar.filter(r => r['MÜŞTERİ'] === isim);
+      if (satislar.length > 0) {
+        bildirimler.push({
+          id: 'hicOdeme-' + isim,
+          tip: 'warn',
+          icon: '🔴',
+          baslik: isim + ' — Hiç ödeme yapılmadı',
+          aciklama: 'Toplam bakiye: ₺' + bakiye.toLocaleString('tr-TR',{maximumFractionDigits:0}),
+          tarih: todayStr,
+          okundu: false,
+          action: () => openMusteri(isim)
+        });
+      }
+    }
+  });
+
+  // 2. Negatif stok uyarısı
+  DATA.urunler.forEach(u => {
+    const ad = u['ÜRÜN_ADI'];
+    const stok = calcNetStok(ad);
+    if (stok < 0) {
+      bildirimler.push({
+        id: 'negstok-' + ad,
+        tip: 'warn',
+        icon: '📦',
+        baslik: ad + ' — Negatif stok!',
+        aciklama: 'Mevcut stok: ' + stok + ' adet',
+        tarih: todayStr,
+        okundu: false,
+        action: () => openUrun(ad)
+      });
+    }
+  });
+
+  // 3. Bugün fiş oluşturulduysa bilgi bildirimi
+  const bugunFisler = [...new Set(DATA.fisler.filter(f => f['TARİH'] === todayStr).map(f => f['FİŞ_NO']))];
+  if (bugunFisler.length > 0) {
+    bildirimler.push({
+      id: 'bugunfis',
+      tip: 'success',
+      icon: '✅',
+      baslik: 'Bugün ' + bugunFisler.length + ' fiş oluşturuldu',
+      aciklama: 'Fiş numaraları: ' + bugunFisler.join(', '),
+      tarih: todayStr,
+      okundu: false,
+      action: () => showPage('fis-gecmis')
+    });
+  }
+
+  // Badge güncelle
+  const okunmamis = bildirimler.filter(b => !b.okundu).length;
+  const badge = document.getElementById('bildirim-badge');
+  if (badge) {
+    if (okunmamis > 0) { badge.style.display = 'flex'; badge.textContent = okunmamis > 9 ? '9+' : okunmamis; }
+    else { badge.style.display = 'none'; }
+  }
+}
+
+function renderDashBildirimler() {
+  const el = document.getElementById('dash-bildirim-preview');
+  if (!el) return;
+  const oncelikli = bildirimler.filter(b => b.tip === 'warn').slice(0, 3);
+  if (!oncelikli.length) { el.innerHTML = '<div class="bildirim-empty">✅ Bekleyen uyarı yok</div>'; return; }
+  el.innerHTML = oncelikli.map(b => `
+    <div class="bildirim-item" style="cursor:pointer" onclick="(${b.action.toString()})()">
+      <div class="bildirim-icon warn">${b.icon}</div>
+      <div class="bildirim-icerik">
+        <div class="bildirim-baslik">${esc(b.baslik)}</div>
+        <div class="bildirim-aciklama">${esc(b.aciklama)}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderBildirimSayfasi() {
+  const el = document.getElementById('bildirim-list-wrap');
+  if (!bildirimler.length) { el.innerHTML = '<div class="bildirim-empty">✅ Bekleyen bildirim yok</div>'; return; }
+  el.innerHTML = bildirimler.map(b => `
+    <div class="bildirim-item ${b.okundu ? 'opacity:0.6' : ''}" style="cursor:pointer;${b.okundu?'opacity:0.6':''}" onclick="(${b.action.toString()})()">
+      <div class="bildirim-icon ${b.tip}">${b.icon}</div>
+      <div class="bildirim-icerik">
+        <div class="bildirim-baslik">${esc(b.baslik)}</div>
+        <div class="bildirim-aciklama">${esc(b.aciklama)}</div>
+        <div class="bildirim-tarih">${esc(b.tarih)}</div>
+      </div>
+      ${!b.okundu ? '<div style="width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:4px"></div>' : ''}
+    </div>
+  `).join('');
+}
+
+function bildirimleriOku() {
+  bildirimler.forEach(b => b.okundu = true);
+  const badge = document.getElementById('bildirim-badge');
+  if (badge) badge.style.display = 'none';
+  renderBildirimSayfasi();
+  toast('Tümü okundu işaretlendi ✓', 'success');
+}
 
 function kargoYakinda() {
   document.getElementById('modal-yakinda').classList.add('open');
