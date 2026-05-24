@@ -485,6 +485,31 @@ td { padding: 10px 13px; font-size: 13px; }
   .hizli-islem-grid { grid-template-columns: repeat(2, 1fr); }
   .dash-row { grid-template-columns: 1fr; }
 }
+
+/* CARİ EKSTRE */
+.ekstre-onizleme {
+  width: 148mm; min-height: auto;
+  background: #fff; color: #000;
+  border: 1px solid #ccc;
+  padding: 8mm 10mm;
+  font-family: Arial, sans-serif;
+  font-size: 11px;
+  box-shadow: var(--shadow);
+}
+.ekstre-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5mm; padding-bottom: 3mm; border-bottom: 2px solid #000; }
+.ekstre-baslik h2 { font-size: 15px; font-weight: 700; margin: 0 0 3px; }
+.ekstre-baslik-bilgi { font-size: 10px; color: #333; line-height: 1.6; }
+.ekstre-musteri { margin-bottom: 4mm; padding: 3mm; background: #f5f5f5; border: 1px solid #ddd; font-size: 11px; }
+.ekstre-table { width: 100%; border-collapse: collapse; margin-bottom: 4mm; }
+.ekstre-table th { background: #000; color: #fff; padding: 3px 5px; font-size: 9px; text-align: left; }
+.ekstre-table td { padding: 3px 5px; border-bottom: 1px solid #e0e0e0; font-size: 10px; }
+.ekstre-table tr.satis td { border-left: 2px solid #e53935; }
+.ekstre-table tr.odeme td { border-left: 2px solid #2e7d32; }
+.ekstre-table td.right { text-align: right; font-family: monospace; }
+.ekstre-table td.red { color: #e53935; font-weight: 700; }
+.ekstre-table td.green { color: #2e7d32; font-weight: 700; }
+.ekstre-toplam { text-align: right; padding: 3mm; background: #f5f5f5; border: 1px solid #ddd; }
+.ekstre-toplam-val { font-size: 14px; font-weight: 700; color: #e53935; }
 </style>
 </head>
 <body>
@@ -631,9 +656,9 @@ td { padding: 10px 13px; font-size: 13px; }
       <!-- Özet Kartları -->
       <div class="dash-grid" style="margin-bottom:24px" id="dash-cards">
         <div class="dash-card" onclick="showPage('stok-urunler')">
-          <div class="dash-card-label">Toplam Ürün</div>
+          <div class="dash-card-label">Toplam Stok</div>
           <div class="dash-card-val blue" id="dash-urun-sayisi">—</div>
-          <div class="dash-card-sub">kayıtlı ürün</div>
+          <div class="dash-card-sub">toplam stok adeti</div>
         </div>
         <div class="dash-card" onclick="showPage('borc-musteriler')">
           <div class="dash-card-label">Toplam Alacak</div>
@@ -810,7 +835,10 @@ td { padding: 10px 13px; font-size: 13px; }
           <span class="detay-badge red">Toplam Borç: <strong id="detay-musteri-bakiye">—</strong></span>
           <span id="detay-musteri-tel" style="font-size:12px;color:var(--text3);font-family:var(--mono)"></span>
         </div>
-        <button class="btn btn-red btn-sm" onclick="deleteMusteri()">🗑 Müşteriyi Sil</button>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost btn-sm" onclick="openMusteriDuzenle()">✏️ Düzenle</button>
+          <button class="btn btn-red btn-sm" onclick="deleteMusteri()">🗑 Sil</button>
+        </div>
       </div>
     </div>
     <div class="content">
@@ -841,7 +869,10 @@ td { padding: 10px 13px; font-size: 13px; }
         <button class="back-btn" onclick="showPage('borc-detay')">← Geri</button>
         <div class="page-title" id="borc-hareket-title">Hesap Hareketleri</div>
       </div>
-      <button class="btn btn-ghost btn-sm" onclick="exportBorcCSV()">⬇ CSV</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost btn-sm" onclick="exportBorcCSV()">⬇ CSV</button>
+        <button class="btn btn-primary btn-sm" onclick="ekstreOlustur()">📄 Ekstre Oluştur</button>
+      </div>
     </div>
     <div class="content">
       <div class="hareket-filters">
@@ -866,6 +897,25 @@ td { padding: 10px 13px; font-size: 13px; }
           <tbody id="tbody-borc-hareketler"></tbody>
         </table>
       </div>
+    </div>
+  </div>
+
+
+  <!-- ===== BORÇ: CARİ EKSTRE ===== -->
+  <div id="page-borc-ekstre" class="page">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="back-btn" onclick="showPage('borc-hareketler')">← Geri</button>
+        <div class="page-title" id="ekstre-baslik">Hesap Ekstresi</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" onclick="ekstrePDFIndir()">🖨 Yazdır / PDF</button>
+        <button class="btn btn-ghost btn-sm" onclick="ekstrePNGIndir()">🖼 PNG İndir</button>
+        <button class="btn btn-primary btn-sm" onclick="ekstreWhatsapp()">📲 WhatsApp</button>
+      </div>
+    </div>
+    <div class="content">
+      <div id="ekstre-preview-container"></div>
     </div>
   </div>
 
@@ -994,10 +1044,9 @@ td { padding: 10px 13px; font-size: 13px; }
         <button class="back-btn" onclick="showPage('fis-yeni')">← Düzenle</button>
         <div class="page-title" id="onizleme-baslik">Fiş Önizleme</div>
       </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn btn-ghost btn-sm" onclick="window.print()">🖨 Yazdır</button>
-        <button class="btn btn-ghost btn-sm" onclick="fisPDFIndir()">📄 PDF İndir</button>
-        <button class="btn btn-ghost btn-sm" onclick="fisResimIndir()">🖼 Resim İndir</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" onclick="fisPDFIndir()">🖨 Yazdır / PDF</button>
+        <button class="btn btn-ghost btn-sm" onclick="fisResimIndir()">🖼 PNG İndir</button>
         <button class="btn btn-primary btn-sm" onclick="fisWhatsapp()">📲 WhatsApp</button>
       </div>
     </div>
@@ -1094,10 +1143,10 @@ td { padding: 10px 13px; font-size: 13px; }
 <!-- Müşteri Ekle -->
 <div class="modal-overlay" id="modal-musteri">
   <div class="modal">
-    <div class="modal-title">👤 Yeni Müşteri Ekle</div>
+    <div class="modal-title">👤 Yeni Cari Ekle</div>
     <div class="form-row">
       <div class="form-group"><label class="form-label">İsim Soyisim *</label><input class="form-input" id="f-musteri-isim" placeholder="Ahmet Yılmaz"></div>
-      <div class="form-group"><label class="form-label">Şehir *</label><input class="form-input" id="f-musteri-sehir" placeholder="İstanbul"></div>
+      <div class="form-group"><label class="form-label">Şehir</label><input class="form-input" id="f-musteri-sehir" placeholder="İstanbul"></div>
     </div>
     <div class="form-row">
       <div class="form-group"><label class="form-label">Telefon</label><input class="form-input" id="f-musteri-tel" placeholder="0532 xxx xx xx" inputmode="tel"></div>
@@ -1141,6 +1190,27 @@ td { padding: 10px 13px; font-size: 13px; }
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal('odeme')">İptal</button>
       <button class="btn btn-green" onclick="submitOdeme()">Kaydet</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Cari Düzenle -->
+<div class="modal-overlay" id="modal-musteri-duzenle">
+  <div class="modal">
+    <div class="modal-title">✏️ Cari Düzenle</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">İsim Soyisim *</label><input class="form-input" id="f-musteri-duzenle-isim" placeholder="Ahmet Yılmaz"></div>
+      <div class="form-group"><label class="form-label">Şehir</label><input class="form-input" id="f-musteri-duzenle-sehir" placeholder="İstanbul"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Telefon</label><input class="form-input" id="f-musteri-duzenle-tel" placeholder="0532 xxx xx xx"></div>
+      <div class="form-group"><label class="form-label">Başlangıç Bakiyesi (₺)</label><input class="form-input" id="f-musteri-duzenle-bakiye" type="number" min="0" step="0.01" placeholder="0.00"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Açıklama</label><textarea class="form-textarea" id="f-musteri-duzenle-aciklama" placeholder="İsteğe bağlı…"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('musteri-duzenle')">İptal</button>
+      <button class="btn btn-primary" onclick="submitMusteriDuzenle()">Güncelle</button>
     </div>
   </div>
 </div>
@@ -1706,10 +1776,10 @@ async function submitMusteri() {
   const tel=document.getElementById('f-musteri-tel').value.trim();
   const bakiye=document.getElementById('f-musteri-bakiye').value.trim();
   const ac=document.getElementById('f-musteri-aciklama').value.trim();
-  if (!isim||!sehir) { toast('İsim ve şehir zorunlu','error'); return; }
+  if (!isim) { toast('İsim zorunlu','error'); return; }
   try {
     await postAction({action:'addMusteri',isim,sehir,telefon:tel,aciklama:ac,baslangic_bakiye:bakiye||'0'});
-    toast('Müşteri eklendi ✓','success'); closeModal('musteri');
+    toast('Cari eklendi ✓','success'); closeModal('musteri');
     ['f-musteri-isim','f-musteri-sehir','f-musteri-tel','f-musteri-bakiye','f-musteri-aciklama'].forEach(id=>document.getElementById(id).value='');
     await loadAllData();
   } catch(e) { toast('Hata: '+e.message,'error'); }
@@ -1745,6 +1815,40 @@ function updateSatisTutar() {
   const a=parseFloat(document.getElementById('f-satis-adet').value)||0, f=parseFloat(document.getElementById('f-satis-fiyat').value)||0;
   document.getElementById('satis-tutar-preview').textContent='Tutar: ₺'+(a*f).toLocaleString('tr-TR',{minimumFractionDigits:2});
 }
+
+// ── CARİ DÜZENLE ──
+function openMusteriDuzenle() {
+  if (!activeMusteri) return;
+  document.getElementById('f-musteri-duzenle-isim').value = activeMusteri['İSİM'] || '';
+  document.getElementById('f-musteri-duzenle-sehir').value = activeMusteri['ŞEHİR'] || '';
+  document.getElementById('f-musteri-duzenle-tel').value = activeMusteri['TELEFON'] || '';
+  document.getElementById('f-musteri-duzenle-bakiye').value = activeMusteri['BAŞLANGIÇ_BAKİYE'] || '';
+  document.getElementById('f-musteri-duzenle-aciklama').value = activeMusteri['AÇIKLAMA'] || '';
+  openModal('musteri-duzenle');
+}
+
+async function submitMusteriDuzenle() {
+  const isim = document.getElementById('f-musteri-duzenle-isim').value.trim();
+  const sehir = document.getElementById('f-musteri-duzenle-sehir').value.trim();
+  const tel = document.getElementById('f-musteri-duzenle-tel').value.trim();
+  const bakiye = document.getElementById('f-musteri-duzenle-bakiye').value.trim();
+  const ac = document.getElementById('f-musteri-duzenle-aciklama').value.trim();
+  if (!isim) { toast('İsim zorunlu', 'error'); return; }
+  try {
+    await postAction({
+      action: 'updateRow',
+      sheetName: 'MÜŞTERİLER',
+      rowIndex: activeMusteri._row,
+      col0: activeMusteri['İSİM'],
+      col1: activeMusteri['ŞEHİR'] || '',
+      newValues: [isim, sehir, tel, ac, Number(bakiye) || 0]
+    });
+    toast('Cari güncellendi ✓', 'success');
+    closeModal('musteri-duzenle');
+    await loadAllData();
+  } catch(e) { toast('Hata: ' + e.message, 'error'); }
+}
+
 async function deleteMusteri() {
   if (!activeMusteri) return;
   const isim=activeMusteri['İSİM'];
@@ -1752,6 +1856,117 @@ async function deleteMusteri() {
   const msg=top>0?`"${isim}" müşterisini silmek istediğinizden emin misiniz?\n\n⚠️ Bu müşteriye ait:\n• ${sS} satış kaydı\n• ${oS} ödeme kaydı\n\nTOPLAM ${top} kayıt kalıcı olarak silinecek!\nBu işlem GERİ ALINAMAZ.`:`"${isim}" müşterisini silmek istediğinizden emin misiniz?`;
   if (!confirm(msg)) return;
   try { await postAction({action:'deleteMusteriTamamen',musteri_adi:isim}); toast(`"${isim}" silindi ✓`,'success'); activeMusteri=null; await loadAllData(); showPage('borc-musteriler'); } catch(e) { toast('Hata: '+e.message,'error'); }
+}
+
+
+// ── CARİ EKSTRE ──
+function ekstreOlustur() {
+  if (!activeMusteri) return;
+  const isim = activeMusteri['İSİM'];
+  const rows = getBorcHareketler();
+  const today = new Date().toLocaleDateString('tr-TR');
+  const bakiye = calcMusteriBakiye(isim);
+
+  const firmaAdi = localStorage.getItem('biyares_firma') ? JSON.parse(localStorage.getItem('biyares_firma')).adi : 'biyares';
+  const logoData = localStorage.getItem('biyares_logo');
+
+  const ekstre = `
+    <div class="ekstre-onizleme" id="ekstre-element">
+      <div class="ekstre-header">
+        <div>
+          ${logoData ? `<img src="${logoData}" style="max-height:14mm;max-width:30mm;object-fit:contain;display:block;margin-bottom:3px">` : ''}
+          <div style="font-size:13px;font-weight:700">${esc(firmaAdi||'biyares')}</div>
+        </div>
+        <div class="ekstre-baslik" style="text-align:right">
+          <h2>HESAP EKSTRESİ</h2>
+          <div class="ekstre-baslik-bilgi">
+            <strong>Tarih:</strong> ${today}<br>
+            <strong>Sayfa:</strong> 1
+          </div>
+        </div>
+      </div>
+
+      <div class="ekstre-musteri">
+        <strong>Cari:</strong> ${esc(isim)}&nbsp;&nbsp;
+        ${activeMusteri['ŞEHİR'] ? `<strong>Şehir:</strong> ${esc(activeMusteri['ŞEHİR'])}&nbsp;&nbsp;` : ''}
+        ${activeMusteri['TELEFON'] ? `<strong>Tel:</strong> ${esc(activeMusteri['TELEFON'])}` : ''}
+      </div>
+
+      <table class="ekstre-table">
+        <thead>
+          <tr>
+            <th>Tarih</th>
+            <th>Tür</th>
+            <th>Açıklama</th>
+            <th style="text-align:right">Tutar</th>
+            <th style="text-align:right">Bakiye</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(r => {
+            const isS = r.tur === 'satis';
+            return `<tr class="${isS ? 'satis' : 'odeme'}">
+              <td>${esc(r.tarih)}</td>
+              <td class="${isS ? 'red' : 'green'}">${isS ? '▲ Satış' : '▼ Ödeme'}</td>
+              <td>${esc(r.aciklama || '—')}</td>
+              <td class="right ${isS ? 'red' : 'green'}">${isS ? '+' : '-'}₺${r.tutar.toLocaleString('tr-TR', {minimumFractionDigits:2})}</td>
+              <td class="right" style="font-weight:700">₺${(r.kalanBakiye||0).toLocaleString('tr-TR', {minimumFractionDigits:2})}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+
+      <div class="ekstre-toplam">
+        <div style="font-size:11px;color:#333;margin-bottom:3px">TOPLAM BAKİYE</div>
+        <div class="ekstre-toplam-val">₺${bakiye.toLocaleString('tr-TR', {minimumFractionDigits:2})}</div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('ekstre-preview-container').innerHTML = ekstre;
+  document.getElementById('ekstre-baslik').textContent = isim + ' — Hesap Ekstresi';
+  showPage('borc-ekstre');
+}
+
+function ekstrePDFIndir() {
+  showPage('borc-ekstre');
+  setTimeout(() => window.print(), 300);
+}
+
+async function ekstrePNGIndir() {
+  const el = document.getElementById('ekstre-element');
+  if (!el) { toast('Önce ekstre oluşturun', 'error'); return; }
+  try {
+    toast('Görsel hazırlanıyor...', 'success');
+    const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+    const isim = activeMusteri ? activeMusteri['İSİM'].replace(/\s+/g, '-') : 'ekstre';
+    const link = document.createElement('a');
+    link.download = 'biyares-ekstre-' + isim + '.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    toast('PNG indirildi ✓', 'success');
+  } catch(e) { toast('Hata: ' + e.message, 'error'); }
+}
+
+async function ekstreWhatsapp() {
+  const el = document.getElementById('ekstre-element');
+  if (!el) { toast('Önce ekstre oluşturun', 'error'); return; }
+  try {
+    toast('Görsel hazırlanıyor...', 'success');
+    const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+    const isim = activeMusteri ? activeMusteri['İSİM'].replace(/\s+/g, '-') : 'ekstre';
+    canvas.toBlob(async (blob) => {
+      const file = new File([blob], 'biyares-ekstre-' + isim + '.png', { type: 'image/png' });
+      if (navigator.share && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'biyares - Hesap Ekstresi' });
+      } else {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = 'biyares-ekstre-' + isim + '.png'; a.click();
+        setTimeout(() => window.open('https://wa.me/', '_blank'), 1000);
+        toast('Görsel indirildi. WhatsApp'ta paylaşabilirsiniz.', 'success');
+      }
+    }, 'image/png');
+  } catch(e) { toast('Hata: ' + e.message, 'error'); }
 }
 
 // ── YARDIMCILAR ──
@@ -1764,7 +1979,7 @@ function showPage(page) {
     'stok-urunler':'nav-stok-urunler','stok-detay':'nav-stok-urunler',
     'stok-hareketler':'nav-stok-urunler','stok-ozet':'nav-stok-ozet',
     'borc-musteriler':'nav-borc-musteriler','borc-detay':'nav-borc-musteriler',
-    'borc-hareketler':'nav-borc-musteriler','borc-ozet':'nav-borc-ozet',
+    'borc-hareketler':'nav-borc-musteriler','borc-ekstre':'nav-borc-musteriler','borc-ozet':'nav-borc-ozet','borc-ekstre':'nav-borc-musteriler',
     'fis-yeni':'nav-fis-yeni','fis-gecmis':'nav-fis-gecmis','fis-onizleme':'nav-fis-yeni'
   };
   if (map[page]) document.getElementById(map[page])?.classList.add('active');
@@ -2094,25 +2309,44 @@ function fisPDFIndir() {
   }, 300);
 }
 
-// Resim İndir
+// PNG İndir
 async function fisResimIndir() {
   const el = document.getElementById('fis-onizleme-element');
   if (!el) { toast('Önce önizleme oluşturun', 'error'); return; }
   try {
-    toast('Resim hazırlanıyor...', 'success');
-    const canvas = await html2canvas(el, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: '#ffffff',
-      width: el.offsetWidth,
-      height: el.offsetHeight
-    });
-    const link = document.createElement('a');
+    toast('Görsel hazırlanıyor...', 'success');
+    const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
     const fisNo = document.getElementById('onizleme-baslik').textContent.split(' — ')[0];
-    link.download = fisNo + '.png';
+    const link = document.createElement('a');
+    link.download = 'biyares-' + fisNo + '.png';
     link.href = canvas.toDataURL('image/png');
     link.click();
-    toast('Resim indirildi ✓', 'success');
+    toast('PNG indirildi ✓', 'success');
+  } catch(e) { toast('Hata: ' + e.message, 'error'); }
+}
+
+// WhatsApp PNG paylaş
+async function fisWhatsappPNG() {
+  const el = document.getElementById('fis-onizleme-element');
+  if (!el) { toast('Önce önizleme oluşturun', 'error'); return; }
+  try {
+    toast('Görsel hazırlanıyor...', 'success');
+    const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+    const fisNo = document.getElementById('onizleme-baslik').textContent.split(' — ')[0];
+    // Blob oluştur ve paylaş
+    canvas.toBlob(async (blob) => {
+      const file = new File([blob], 'biyares-' + fisNo + '.png', { type: 'image/png' });
+      if (navigator.share && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'biyares - ' + fisNo });
+      } else {
+        // Fallback: indir + WhatsApp web aç
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'biyares-' + fisNo + '.png'; a.click();
+        setTimeout(() => window.open('https://wa.me/', '_blank'), 1000);
+        toast('Görsel indirildi. WhatsApp'ta paylaşabilirsiniz.', 'success');
+      }
+    }, 'image/png');
   } catch(e) { toast('Hata: ' + e.message, 'error'); }
 }
 
@@ -2262,7 +2496,12 @@ function renderDashboard() {
   document.getElementById('dash-selam').textContent = selam;
 
   // Özet kartlar
-  document.getElementById('dash-urun-sayisi').textContent = DATA.urunler.length;
+  const toplamStok = DATA.urunler.reduce((s, u) => {
+    const g = DATA.giris.filter(r=>r['ÜRÜN_ADI']===u['ÜRÜN_ADI']).reduce((t,r)=>t+(parseInt(r['ADET'])||0),0);
+    const c = DATA.cikis.filter(r=>r['ÜRÜN_ADI']===u['ÜRÜN_ADI']).reduce((t,r)=>t+(parseInt(r['ADET'])||0),0);
+    return s + Math.max(0, g-c);
+  }, 0);
+  document.getElementById('dash-urun-sayisi').textContent = toplamStok.toLocaleString('tr-TR');
   
   const toplamAlacak = DATA.musteriler.reduce((s,m) => s + Math.max(0, calcMusteriBakiye(m['İSİM'])), 0);
   document.getElementById('dash-toplam-alacak').textContent = '₺' + toplamAlacak.toLocaleString('tr-TR', {maximumFractionDigits:0});
@@ -2434,14 +2673,14 @@ function renderBildirimSayfasi() {
   const el = document.getElementById('bildirim-list-wrap');
   if (!bildirimler.length) { el.innerHTML = '<div class="bildirim-empty">✅ Bekleyen bildirim yok</div>'; return; }
   el.innerHTML = bildirimler.map(b => `
-    <div class="bildirim-item ${b.okundu ? 'opacity:0.6' : ''}" style="cursor:pointer;${b.okundu?'opacity:0.6':''}" onclick="(${b.action.toString()})()">
+    <div class="bildirim-item" style="cursor:pointer;opacity:${b.okundu?'0.5':'1'}" onclick="bildirimOku('${b.id}');(${b.action.toString()})()">
       <div class="bildirim-icon ${b.tip}">${b.icon}</div>
       <div class="bildirim-icerik">
         <div class="bildirim-baslik">${esc(b.baslik)}</div>
         <div class="bildirim-aciklama">${esc(b.aciklama)}</div>
         <div class="bildirim-tarih">${esc(b.tarih)}</div>
       </div>
-      ${!b.okundu ? '<div style="width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:4px"></div>' : ''}
+      ${!b.okundu ? '<div style="width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0;margin-top:6px"></div>' : '<div style="width:8px;height:8px;border-radius:50%;background:var(--border2);flex-shrink:0;margin-top:6px"></div>'}
     </div>
   `).join('');
 }
@@ -2450,8 +2689,23 @@ function bildirimleriOku() {
   bildirimler.forEach(b => b.okundu = true);
   const badge = document.getElementById('bildirim-badge');
   if (badge) badge.style.display = 'none';
+  document.getElementById('dash-bildirim-sayisi').textContent = '—';
   renderBildirimSayfasi();
   toast('Tümü okundu işaretlendi ✓', 'success');
+}
+
+// Tekil bildirim okundu işaretle
+function bildirimOku(id) {
+  const b = bildirimler.find(x => x.id === id);
+  if (b) b.okundu = true;
+  const okunmamis = bildirimler.filter(x => !x.okundu).length;
+  const badge = document.getElementById('bildirim-badge');
+  if (badge) {
+    if (okunmamis > 0) { badge.style.display = 'flex'; badge.textContent = okunmamis > 9 ? '9+' : okunmamis; }
+    else badge.style.display = 'none';
+  }
+  document.getElementById('dash-bildirim-sayisi').textContent = okunmamis || '—';
+  renderBildirimSayfasi();
 }
 
 function kargoYakinda() {
