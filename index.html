@@ -1962,7 +1962,7 @@ async function ekstreWhatsapp() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a'); a.href = url; a.download = 'biyares-ekstre-' + isim + '.png'; a.click();
         setTimeout(() => window.open('https://wa.me/', '_blank'), 1000);
-        toast('Görsel indirildi. WhatsApp'ta paylaşabilirsiniz.', 'success');
+        toast('Görsel indirildi. WhatsApp\u2019ta paylaşabilirsiniz.', 'success');
       }
     }, 'image/png');
   } catch(e) { toast('Hata: ' + e.message, 'error'); }
@@ -2344,7 +2344,7 @@ async function fisWhatsappPNG() {
         const a = document.createElement('a');
         a.href = url; a.download = 'biyares-' + fisNo + '.png'; a.click();
         setTimeout(() => window.open('https://wa.me/', '_blank'), 1000);
-        toast('Görsel indirildi. WhatsApp'ta paylaşabilirsiniz.', 'success');
+        toast('Görsel indirildi. WhatsApp\u2019ta paylaşabilirsiniz.', 'success');
       }
     }, 'image/png');
   } catch(e) { toast('Hata: ' + e.message, 'error'); }
