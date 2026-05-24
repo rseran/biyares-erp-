@@ -1342,7 +1342,6 @@ async function loadAllData() {
     ]);
     DATA.urunler=u; DATA.giris=g; DATA.cikis=c;
     DATA.musteriler=m; DATA.satislar=s; DATA.odemeler=o; DATA.fisler=f;
-    renderFisGecmis();
     renderUrunGrid(); renderStokOzet();
     renderMusteriGrid(); renderBorcOzet();
     renderFisGecmis(); fillMusteriDatalist(); renderDashboard();
@@ -1979,7 +1978,7 @@ function showPage(page) {
     'stok-urunler':'nav-stok-urunler','stok-detay':'nav-stok-urunler',
     'stok-hareketler':'nav-stok-urunler','stok-ozet':'nav-stok-ozet',
     'borc-musteriler':'nav-borc-musteriler','borc-detay':'nav-borc-musteriler',
-    'borc-hareketler':'nav-borc-musteriler','borc-ekstre':'nav-borc-musteriler','borc-ozet':'nav-borc-ozet','borc-ekstre':'nav-borc-musteriler',
+    'borc-hareketler':'nav-borc-musteriler','borc-ekstre':'nav-borc-musteriler','borc-ozet':'nav-borc-ozet',
     'fis-yeni':'nav-fis-yeni','fis-gecmis':'nav-fis-gecmis','fis-onizleme':'nav-fis-yeni'
   };
   if (map[page]) document.getElementById(map[page])?.classList.add('active');
@@ -1997,16 +1996,17 @@ function showPage(page) {
 
 function toggleModule(id) {
   const mod = document.getElementById(id);
+  if (!mod) return;
   const isOpen = mod.classList.contains('open');
-  // Hepsini kapat
   document.querySelectorAll('.nav-module').forEach(m => m.classList.remove('open'));
-  // Kapalıysa aç
   if (!isOpen) mod.classList.add('open');
 }
 
 function openModule(id) {
+  if (!id) return;
   document.querySelectorAll('.nav-module').forEach(m => m.classList.remove('open'));
-  document.getElementById(id)?.classList.add('open');
+  const el = document.getElementById(id);
+  if (el) el.classList.add('open');
 }
 function openModal(type) {
   const today=new Date().toISOString().split('T')[0];
@@ -2469,12 +2469,11 @@ async function gecmisFisSil(fisNo) {
   } catch(e) { toast('Hata: ' + e.message, 'error'); }
 }
 
-// Sayfa açılınca firma bilgilerini yükle ve bir boş satır ekle
-setTimeout(() => {
+// Sayfa açılınca firma bilgilerini yükle
+document.addEventListener('DOMContentLoaded', () => {
   loadFirmaInfo();
-  fillMusteriDatalist();
   if (fisUrunler.length === 0) fisUrunEkle();
-}, 500);
+});
 
 
 // ══════════════════════════════════════
