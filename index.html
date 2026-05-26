@@ -3131,15 +3131,7 @@ async function fisWhatsappPNG() {
 
 // WhatsApp
 function fisWhatsapp() {
-  const fisNo = document.getElementById('onizleme-baslik').textContent.split(' — ')[0];
-  const musteri = document.getElementById('fis-musteri-adi')?.value || '';
-  const toplam = document.getElementById('fis-genel-toplam')?.textContent || '';
-  const mesaj = `Merhaba, ${musteri} için ${fisNo} numaralı sipariş fişiniz hazırlanmıştır.
-Genel Toplam: ${toplam}
-
-Biyares`;
-  const url = `https://wa.me/?text=${encodeURIComponent(mesaj)}`;
-  window.open(url, '_blank');
+  fisWhatsappPNG();
 }
 
 // Fişi sıfırla
