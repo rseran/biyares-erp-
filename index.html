@@ -1285,7 +1285,17 @@ td { padding: 10px 13px; font-size: 13px; }
     <div class="form-group"><label class="form-label">Açıklama *</label><input class="form-input" id="f-satis-aciklama" placeholder="örn. Tişört 22 seri"></div>
     <div class="form-row">
       <div class="form-group"><label class="form-label">Adet *</label><input class="form-input" id="f-satis-adet" type="number" min="1" placeholder="0" inputmode="numeric" oninput="updateSatisTutar()"></div>
-      <div class="form-group"><label class="form-label">Birim Fiyat (₺) *</label><input class="form-input" id="f-satis-fiyat" type="number" min="0" step="0.01" placeholder="0.00" oninput="updateSatisTutar()"></div>
+      <div class="form-group"><label class="form-label">Birim Fiyat *</label>
+        <div style="display:flex;gap:6px">
+          <input class="form-input" id="f-satis-fiyat" type="number" min="0" step="0.01" placeholder="0.00" oninput="updateSatisTutar()" style="flex:1">
+          <select class="form-select" id="f-satis-para" style="width:70px" onchange="updateSatisTutar()">
+            <option value="TL">TL</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+          </select>
+        </div>
+      </div>
     </div>
     <div class="fiyat-preview" id="satis-tutar-preview">Tutar: ₺0,00</div>
     <div class="modal-actions">
@@ -1398,7 +1408,21 @@ td { padding: 10px 13px; font-size: 13px; }
     <div id="alis-tedarikci-label" style="font-size:13px;color:var(--text2);margin-bottom:16px;font-family:var(--mono)"></div>
     <div class="form-group"><label class="form-label">Tarih *</label><input class="form-input" id="f-alis-tarih" type="date"></div>
     <div class="form-group"><label class="form-label">Açıklama *</label><input class="form-input" id="f-alis-aciklama" placeholder="örn. Tişört alışı"></div>
-    <div class="form-group"><label class="form-label">Tutar (₺) *</label><input class="form-input" id="f-alis-tutar" type="number" min="0" step="0.01" placeholder="0.00" inputmode="decimal"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Adet *</label><input class="form-input" id="f-alis-adet" type="number" min="0" step="1" placeholder="0" inputmode="numeric" oninput="updateAlisTutar()"></div>
+      <div class="form-group"><label class="form-label">Birim Fiyat *</label>
+        <div style="display:flex;gap:6px">
+          <input class="form-input" id="f-alis-fiyat" type="number" min="0" step="0.01" placeholder="0.00" inputmode="decimal" oninput="updateAlisTutar()" style="flex:1">
+          <select class="form-select" id="f-alis-para" style="width:70px" onchange="updateAlisTutar()">
+            <option value="TL">TL</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="fiyat-preview" id="alis-tutar-preview">Toplam: ₺0,00</div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal('alis')">İptal</button>
       <button class="btn btn-red" onclick="submitAlis()">Kaydet</button>
@@ -1670,7 +1694,10 @@ function renderStokHareketler() {
       <td class="td-mono">${r.birimFiyat>0?'₺'+r.birimFiyat.toLocaleString('tr-TR',{minimumFractionDigits:2}):'—'}</td>
       <td class="td-mono">${r.toplam>0?'₺'+r.toplam.toLocaleString('tr-TR',{minimumFractionDigits:2}):'—'}</td>
       <td class="td-muted">${esc(r.aciklama||'—')}</td>
-      <td><button class="btn-icon" onclick="openStokDuzenle(${i})">✏️</button></td>
+      <td style="display:flex;gap:4px">
+        <button class="btn-icon" onclick="openStokDuzenle(${i})" title="Düzenle">✏️</button>
+        <button class="btn-icon" onclick="deleteStokHareket(${i})" title="Sil" style="color:var(--red)">🗑</button>
+      </td>
     </tr>`;
   }).join('');
 }
@@ -1743,6 +1770,20 @@ function renderStokOzet() {
       });
     }
     
+    // Eksik veri tespiti
+    const eksikMaliyet = gR.filter(r => !(parseFloat(r['MALİYET']) > 0));
+    const eksikFiyat = cR.filter(r => !(parseFloat(r['FİYAT']) > 0));
+    const eksikVar = eksikMaliyet.length > 0 || eksikFiyat.length > 0;
+    
+    let eksikDetay = '';
+    if (eksikMaliyet.length > 0) {
+      eksikDetay += eksikMaliyet.map(r => `• ${r['TARİH']} tarihli ${r['ADET']} adetlik girişte maliyet girilmemiş`).join('<br>');
+    }
+    if (eksikFiyat.length > 0) {
+      if (eksikDetay) eksikDetay += '<br>';
+      eksikDetay += eksikFiyat.map(r => `• ${r['TARİH']} tarihli ${r['ADET']} adetlik çıkışta satış fiyatı girilmemiş`).join('<br>');
+    }
+
     return `<div class="ozet-card">
       <div class="ozet-card-header"><div><div class="ozet-urun-adi">${esc(ad)}</div><div class="ozet-kat">${esc(u['KATEGORİ']||'—')}</div></div></div>
       <div class="ozet-metrics" style="grid-template-columns:repeat(${karHesaplanabilir?6:5},1fr)">
@@ -1752,10 +1793,24 @@ function renderStokOzet() {
         <div class="ozet-metric"><div class="ozet-metric-val blue">${ort>0?'₺'+ort.toLocaleString('tr-TR',{maximumFractionDigits:0}):'—'}</div><div class="ozet-metric-label">Ort. Satış Fiyatı</div></div>
         ${karHesaplanabilir ? `
         <div class="ozet-metric"><div class="ozet-metric-val blue">₺${smm.toLocaleString('tr-TR',{maximumFractionDigits:0})}</div><div class="ozet-metric-label">SMM</div></div>
-        <div class="ozet-metric"><div class="ozet-metric-val ${toplamKar>=0?'green':'red'}">₺${Math.abs(toplamKar).toLocaleString('tr-TR',{maximumFractionDigits:0})}</div><div class="ozet-metric-label">${toplamKar>=0?'Toplam Kâr':'Toplam Zarar'}</div></div>
-        ` : ''}
+        <div class="ozet-metric">
+          <div class="ozet-metric-val ${toplamKar>=0?'green':'red'}">
+            ${eksikVar ? `<span style="cursor:pointer;font-size:16px" title="Eksik veri var, tam hesaplanamıyor" onclick="document.getElementById('eksik-${esc(ad)}').style.display=document.getElementById('eksik-${esc(ad)}').style.display==='none'?'block':'none'">⚠️</span>` : ''}
+            ₺${Math.abs(toplamKar).toLocaleString('tr-TR',{maximumFractionDigits:0})}
+          </div>
+          <div class="ozet-metric-label">${toplamKar>=0?'Toplam Kâr':'Toplam Zarar'}</div>
+        </div>
+        ` : `
+        <div class="ozet-metric">
+          <div class="ozet-metric-val" style="color:var(--text3);cursor:pointer;font-size:13px" onclick="document.getElementById('eksik-${esc(ad)}').style.display=document.getElementById('eksik-${esc(ad)}').style.display==='none'?'block':'none'">
+            ${eksikVar ? '⚠️ Hesaplanamıyor' : '—'}
+          </div>
+          <div class="ozet-metric-label">Kâr/Zarar</div>
+        </div>
+        `}
         <div class="ozet-metric"><div class="ozet-metric-val amber">${bug>0?bug:'—'}</div><div class="ozet-metric-label">Bugün Çıkış</div></div>
       </div>
+      ${eksikVar ? `<div id="eksik-${esc(ad)}" style="display:none;margin-top:12px;padding:10px 14px;background:rgba(229,57,53,0.06);border:1px solid rgba(229,57,53,0.2);border-radius:10px;font-size:11px;color:var(--red);line-height:1.8">${eksikDetay}</div>` : ''}
       ${bug>0?`<div class="ozet-bugun">Bugün <span class="bugun-badge">${bug} adet</span> çıkış yapıldı</div>`:''}
     </div>`;
   }).join('');
@@ -1938,7 +1993,10 @@ function renderBorcHareketler() {
       <td class="td-mono">${r.fiyat>0?'₺'+r.fiyat.toLocaleString('tr-TR',{minimumFractionDigits:2}):'—'}</td>
       <td class="td-mono" style="color:${isS?'var(--red)':'var(--green)'};font-weight:700">${isS?'+':'-'}₺${r.tutar.toLocaleString('tr-TR',{minimumFractionDigits:2})}</td>
       <td class="td-mono" style="font-weight:700">₺${(r.kalanBakiye||0).toLocaleString('tr-TR',{minimumFractionDigits:2})}</td>
-      <td><button class="btn-icon" onclick="openBorcDuzenle(${i})">✏️</button></td>
+      <td style="display:flex;gap:4px">
+        <button class="btn-icon" onclick="openBorcDuzenle(${i})" title="Düzenle">✏️</button>
+        <button class="btn-icon" onclick="deleteBorcHareket(${i})" title="Sil" style="color:var(--red)">🗑</button>
+      </td>
     </tr>`;
   }).join('');
 }
@@ -2072,10 +2130,11 @@ async function submitSatis() {
   const ac=document.getElementById('f-satis-aciklama').value.trim();
   const adet=document.getElementById('f-satis-adet').value;
   const fiyat=document.getElementById('f-satis-fiyat').value;
+  const para=document.getElementById('f-satis-para')?.value||'TL';
   if (!tarih||!ac||!adet||!fiyat||!activeMusteri) { toast('Tüm alanlar zorunlu','error'); return; }
   const tutar=(parseFloat(adet)||0)*(parseFloat(fiyat)||0);
   try {
-    await postAction({action:'addSatis',tarih,musteri:activeMusteri['İSİM'],aciklama:ac,adet:Number(adet),fiyat:Number(fiyat),tutar});
+    await postAction({action:'addSatis',tarih,musteri:activeMusteri['İSİM'],aciklama:ac,adet:Number(adet),fiyat:Number(fiyat),tutar,para_birimi:para});
     toast('Satış kaydedildi ✓','success'); closeModal('satis');
     ['f-satis-aciklama','f-satis-adet','f-satis-fiyat'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('satis-tutar-preview').textContent='Tutar: ₺0,00';
@@ -2095,8 +2154,11 @@ async function submitOdeme() {
   } catch(e) { toast('Hata: '+e.message,'error'); }
 }
 function updateSatisTutar() {
-  const a=parseFloat(document.getElementById('f-satis-adet').value)||0, f=parseFloat(document.getElementById('f-satis-fiyat').value)||0;
-  document.getElementById('satis-tutar-preview').textContent='Tutar: ₺'+(a*f).toLocaleString('tr-TR',{minimumFractionDigits:2});
+  const a = parseFloat(document.getElementById('f-satis-adet').value)||0;
+  const f = parseFloat(document.getElementById('f-satis-fiyat').value)||0;
+  const para = document.getElementById('f-satis-para')?.value || 'TL';
+  const sembol = para==='USD'?'$':para==='EUR'?'€':para==='GBP'?'£':'₺';
+  document.getElementById('satis-tutar-preview').textContent = 'Tutar: ' + sembol + (a*f).toLocaleString('tr-TR',{minimumFractionDigits:2});
 }
 
 // ── CARİ DÜZENLE ──
@@ -2269,7 +2331,10 @@ function renderTedarikciHareketler() {
       <td class="td-muted">${esc(r.aciklama||'—')}</td>
       <td class="td-mono" style="color:${isA?'var(--red)':'var(--green)'};font-weight:700">${isA?'+':'-'}₺${r.tutar.toLocaleString('tr-TR',{minimumFractionDigits:2})}</td>
       <td class="td-mono" style="font-weight:700">₺${(r.kalanBakiye||0).toLocaleString('tr-TR',{minimumFractionDigits:2})}</td>
-      <td><button class="btn-icon" onclick="openTedarikciHarDuzenle(${i})">✏️</button></td>
+      <td style="display:flex;gap:4px">
+        <button class="btn-icon" onclick="openTedarikciHarDuzenle(${i})" title="Düzenle">✏️</button>
+        <button class="btn-icon" onclick="deleteTedarikciHareket(${i})" title="Sil" style="color:var(--red)">🗑</button>
+      </td>
     </tr>`;
   }).join('');
 }
@@ -2350,17 +2415,28 @@ async function submitTedarikciDuzenle() {
   } catch(e) { toast('Hata: '+e.message,'error'); }
 }
 
+function updateAlisTutar() {
+  const a = parseFloat(document.getElementById('f-alis-adet').value)||0;
+  const f = parseFloat(document.getElementById('f-alis-fiyat').value)||0;
+  const para = document.getElementById('f-alis-para')?.value||'TL';
+  const sembol = para==='USD'?'$':para==='EUR'?'€':para==='GBP'?'£':'₺';
+  document.getElementById('alis-tutar-preview').textContent = 'Toplam: ' + sembol + (a*f).toLocaleString('tr-TR',{minimumFractionDigits:2});
+}
+
 async function submitAlis() {
   const tarih = document.getElementById('f-alis-tarih').value;
   const ac = document.getElementById('f-alis-aciklama').value.trim();
-  const tutar = document.getElementById('f-alis-tutar').value;
-  if (!tarih||!ac||!tutar||!activeTedarikci) { toast('Tüm alanlar zorunlu','error'); return; }
+  const adet = parseFloat(document.getElementById('f-alis-adet').value)||0;
+  const fiyat = parseFloat(document.getElementById('f-alis-fiyat').value)||0;
+  const para = document.getElementById('f-alis-para')?.value||'TL';
+  const tutar = adet * fiyat;
+  if (!tarih||!ac||!adet||!fiyat||!activeTedarikci) { toast('Tüm alanlar zorunlu','error'); return; }
   try {
-    await postAction({action:'addAlis',tarih,tedarikci:activeTedarikci['İSİM'],aciklama:ac,tutar:Number(tutar)});
+    await postAction({action:'addAlis',tarih,tedarikci:activeTedarikci['İSİM'],aciklama:ac,adet,fiyat,tutar,para_birimi:para});
     toast('Alış kaydedildi ✓','success');
     closeModal('alis');
-    document.getElementById('f-alis-aciklama').value='';
-    document.getElementById('f-alis-tutar').value='';
+    ['f-alis-aciklama','f-alis-adet','f-alis-fiyat'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('alis-tutar-preview').textContent='Toplam: ₺0,00';
     await loadAllData();
   } catch(e) { toast('Hata: '+e.message,'error'); }
 }
@@ -2482,6 +2558,48 @@ async function tedarikciEkstreWhatsapp() {
   },'image/png');
 }
 
+
+// ── HAREKET SİLME FONKSİYONLARI ──
+
+async function deleteBorcHareket(i) {
+  const r = _borcCache[i];
+  if (!r) return;
+  const tip = r.tur === 'satis' ? 'satış' : 'ödeme';
+  if (!confirm(`Bu ${tip} kaydını silmek istediğinizden emin misiniz?\n\nTarih: ${r.tarih}\nTutar: ₺${r.tutar.toLocaleString('tr-TR')}\n\nBu işlem GERİ ALINAMAZ.`)) return;
+  const sheet = r.tur === 'satis' ? 'SATIŞLAR' : 'ÖDEMELER';
+  try {
+    await postAction({action:'deleteRow',sheetName:sheet,rowIndex:r._raw._row,col0:r._raw['TARİH'],col1:r._raw[r.tur==='satis'?'MÜŞTERİ':'MÜŞTERİ']});
+    toast('Kayıt silindi ✓','success');
+    await loadAllData();
+  } catch(e) { toast('Hata: '+e.message,'error'); }
+}
+
+async function deleteTedarikciHareket(i) {
+  const r = _tedarikciCache[i];
+  if (!r) return;
+  const tip = r.tur === 'alis' ? 'alış' : 'ödeme';
+  if (!confirm(`Bu ${tip} kaydını silmek istediğinizden emin misiniz?\n\nTarih: ${r.tarih}\nTutar: ₺${r.tutar.toLocaleString('tr-TR')}\n\nBu işlem GERİ ALINAMAZ.`)) return;
+  const sheet = r.tur === 'alis' ? 'ALIŞLAR' : 'TEDARİKÇİ_ÖDEMELERİ';
+  try {
+    await postAction({action:'deleteRow',sheetName:sheet,rowIndex:r._raw._row,col0:r._raw['TARİH'],col1:r._raw['TEDARİKÇİ']});
+    toast('Kayıt silindi ✓','success');
+    await loadAllData();
+  } catch(e) { toast('Hata: '+e.message,'error'); }
+}
+
+async function deleteStokHareket(i) {
+  const r = _stokCache[i];
+  if (!r) return;
+  const tip = r.tur === 'giris' ? 'stok girişi' : 'stok çıkışı';
+  if (!confirm(`Bu ${tip} kaydını silmek istediğinizden emin misiniz?\n\nTarih: ${r.tarih}\nAdet: ${r.adet}\n\nBu işlem GERİ ALINAMAZ.`)) return;
+  const sheet = r.tur === 'giris' ? 'STOK_GIRIS' : 'STOK_CIKIS';
+  try {
+    await postAction({action:'deleteRow',sheetName:sheet,rowIndex:r._raw._row,col0:r._raw['TARİH'],col1:r._raw['ÜRÜN_ADI']});
+    toast('Kayıt silindi ✓','success');
+    await loadAllData();
+  } catch(e) { toast('Hata: '+e.message,'error'); }
+}
+
 // ── CARİ EKSTRE ──
 function ekstreOlustur() {
   if (!activeMusteri) return;
@@ -2528,18 +2646,34 @@ function ekstreOlustur() {
           </tr>
         </thead>
         <tbody>
-          ${rows.map(r => {
-            const isS = r.tur === 'satis';
-            return `<tr class="${isS ? 'satis' : 'odeme'}">
-              <td>${esc(r.tarih)}</td>
-              <td class="${isS ? 'red' : 'green'}">${isS ? '▲ Satış' : '▼ Ödeme'}</td>
-              <td>${esc(r.aciklama || '—')}</td>
-              <td class="right">${r.adet > 0 ? r.adet : '—'}</td>
-              <td class="right">${r.fiyat > 0 ? '₺'+r.fiyat.toLocaleString('tr-TR',{minimumFractionDigits:2}) : '—'}</td>
-              <td class="right ${isS ? 'red' : 'green'}">${isS ? '+' : '-'}₺${r.tutar.toLocaleString('tr-TR', {minimumFractionDigits:2})}</td>
-              <td class="right" style="font-weight:700">₺${(r.kalanBakiye||0).toLocaleString('tr-TR', {minimumFractionDigits:2})}</td>
-            </tr>`;
-          }).join('')}
+          ${(() => {
+            const bas = parseFloat(activeMusteri['BAŞLANGIÇ_BAKİYE'])||0;
+            let satirlar = '';
+            if (bas > 0) {
+              satirlar += `<tr style="background:#fff8e1">
+                <td>—</td>
+                <td style="font-weight:700;color:#e65100">⬛ DEVİR</td>
+                <td>Başlangıç Bakiyesi</td>
+                <td class="right">—</td>
+                <td class="right">—</td>
+                <td class="right" style="font-weight:700;color:#e65100">+₺${bas.toLocaleString('tr-TR',{minimumFractionDigits:2})}</td>
+                <td class="right" style="font-weight:700">₺${bas.toLocaleString('tr-TR',{minimumFractionDigits:2})}</td>
+              </tr>`;
+            }
+            satirlar += rows.map(r => {
+              const isS = r.tur === 'satis';
+              return `<tr class="${isS ? 'satis' : 'odeme'}">
+                <td>${esc(r.tarih)}</td>
+                <td class="${isS ? 'red' : 'green'}">${isS ? '▲ Satış' : '▼ Ödeme'}</td>
+                <td>${esc(r.aciklama || '—')}</td>
+                <td class="right">${r.adet > 0 ? r.adet : '—'}</td>
+                <td class="right">${r.fiyat > 0 ? '₺'+r.fiyat.toLocaleString('tr-TR',{minimumFractionDigits:2}) : '—'}</td>
+                <td class="right ${isS ? 'red' : 'green'}">${isS ? '+' : '-'}₺${r.tutar.toLocaleString('tr-TR',{minimumFractionDigits:2})}</td>
+                <td class="right" style="font-weight:700">₺${(r.kalanBakiye||0).toLocaleString('tr-TR',{minimumFractionDigits:2})}</td>
+              </tr>`;
+            }).join('');
+            return satirlar;
+          })()}
         </tbody>
       </table>
 
@@ -2648,7 +2782,9 @@ function openModal(type) {
   if (type==='alis') {
     document.getElementById('f-alis-tarih').value=today;
     document.getElementById('f-alis-aciklama').value='';
-    document.getElementById('f-alis-tutar').value='';
+    document.getElementById('f-alis-adet').value='';
+    document.getElementById('f-alis-fiyat').value='';
+    document.getElementById('alis-tutar-preview').textContent='Toplam: ₺0,00';
     if(activeTedarikci) document.getElementById('alis-tedarikci-label').textContent='🏭 '+activeTedarikci['İSİM'];
   }
   if (type==='tedarikci-odeme') {
@@ -2894,7 +3030,7 @@ async function fisOnizle() {
           <tr>
             <th style="width:20px">#</th>
             <th>Açıklama</th>
-            <th style="width:50px;text-align:center">Adet/Birim</th>
+            <th style="width:60px;text-align:center">Birim</th>
             <th style="width:55px;text-align:right;white-space:nowrap">Fiyat</th>
             <th style="width:65px;text-align:right;white-space:nowrap">Tutar</th>
           </tr>
@@ -2904,7 +3040,7 @@ async function fisOnizle() {
             <tr>
               <td>${i+1}</td>
               <td>${esc(u.aciklama)}</td>
-              <td style="text-align:center">${u.adet} ${u.birim}</td>
+              <td style="text-align:center;white-space:nowrap">${u.adet} ${u.birim}</td>
               <td style="text-align:right;white-space:nowrap">${formatPara(u.birimFiyat, u.paraBirimi)}</td>
               <td style="text-align:right;white-space:nowrap">${formatPara(u.adet * u.birimFiyat, u.paraBirimi)}</td>
             </tr>
