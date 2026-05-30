@@ -1658,8 +1658,8 @@ td { padding: 10px 13px; font-size: 13px; }
 <div id="toast"></div>
 
 <script>
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby737YihIdCEa1jCqP7X3lPAhJq8bJIdBc0-AIwzQXRzuyrOR9Nj1Xqkap7Xa6hE8KZ/exec';
-const SHEET_ID = '1ORY8ISiWDjqDHhHsjBOhZNKbH52lsB70ZmPdIxPxEjA';
+// const APPS_SCRIPT_URL = ''; // Artık Firestore kullanılıyor
+// const SHEET_ID = ''; // Artık Firestore kullanılıyor
 
 let DATA = { urunler:[], giris:[], cikis:[], musteriler:[], satislar:[], odemeler:[], fisler:[], tedarikciler:[], alislar:[], tedarikciodemeler:[] };
 let activeUrun = null;
@@ -1680,41 +1680,144 @@ function avatarInitials(name) {
   return p.length >= 2 ? (p[0][0]+p[p.length-1][0]).toUpperCase() : name.substring(0,2).toUpperCase();
 }
 
-// ── VERİ OKUMA ──
-async function fetchSheet(name) {
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(name)}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(name + ' okunamadı');
-  return parseCSV(await res.text());
-}
-function parseCSV(text) {
-  const lines = text.trim().split('\n');
-  if (lines.length < 2) return [];
-  const headers = parseLine(lines[0]);
-  return lines.slice(1).map((line, i) => {
-    const vals = parseLine(line);
-    const obj = { _row: i+2 };
-    headers.forEach((h,j) => { obj[h.trim()] = (vals[j]||'').trim(); });
-    return obj;
-  });
-}
-function parseLine(line) {
-  const result=[]; let cur='', inQ=false;
-  for (let i=0;i<line.length;i++) {
-    const c=line[i];
-    if (c==='"') { inQ=!inQ; }
-    else if (c===','&&!inQ) { result.push(cur); cur=''; }
-    else cur+=c;
-  }
-  result.push(cur); return result;
+// ── FİRESTORE YARDIMCILAR ──
+function uid() { return window._currentUser?.uid; }
+
+function col(name) {
+  const { collection, doc } = window._firebase;
+  const db = window._firebase.db;
+  return collection(doc(collection(db, 'users'), uid()), name);
 }
 
-// ── VERİ YAZMA ──
+async function fsGetAll(colName) {
+  const { getDocs } = window._firebase;
+  const snap = await getDocs(col(colName));
+  return snap.docs.map(d => ({ _id: d.id, ...d.data() }));
+}
+
+async function fsAdd(colName, data) {
+  const { addDoc } = window._firebase;
+  return await addDoc(col(colName), { ...data, _ts: Date.now() });
+}
+
+async function fsUpdate(colName, id, data) {
+  const { doc, updateDoc, collection } = window._firebase;
+  const db = window._firebase.db;
+  const ref = doc(collection(doc(collection(db, 'users'), uid()), colName), id);
+  return await updateDoc(ref, data);
+}
+
+async function fsDelete(colName, id) {
+  const { doc, deleteDoc, collection } = window._firebase;
+  const db = window._firebase.db;
+  const ref = doc(collection(doc(collection(db, 'users'), uid()), colName), id);
+  return await deleteDoc(ref);
+}
+
+// Eski postAction — artık Firestore kullanıyor
 async function postAction(payload) {
-  const res = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify(payload), headers:{'Content-Type':'text/plain'} });
-  const json = await res.json();
-  if (json.status!=='ok') throw new Error(json.message);
-  return json;
+  const action = payload.action;
+
+  // STOK
+  if (action === 'addProduct') { await fsAdd('urunler', { ÜRÜN_ADI: payload.urun_adi, KATEGORİ: payload.kategori||'' }); return {status:'ok'}; }
+  if (action === 'addStokGiris') { await fsAdd('stok_giris', { TARİH: payload.tarih, ÜRÜN_ADI: payload.urun_adi, ADET: payload.adet, AÇIKLAMA: payload.aciklama||'', MALİYET: payload.maliyet||0 }); return {status:'ok'}; }
+  if (action === 'addStokCikis') { await fsAdd('stok_cikis', { TARİH: payload.tarih, ÜRÜN_ADI: payload.urun_adi, ADET: payload.adet, FİYAT: payload.fiyat||0, AÇIKLAMA: payload.aciklama||'', SMM: payload.smm||0 }); return {status:'ok'}; }
+  if (action === 'deleteUrunTamamen') {
+    const urunler = await fsGetAll('urunler');
+    const girisler = await fsGetAll('stok_giris');
+    const cikislar = await fsGetAll('stok_cikis');
+    for (const u of urunler.filter(u=>u['ÜRÜN_ADI']===payload.urun_adi)) await fsDelete('urunler', u._id);
+    for (const g of girisler.filter(g=>g['ÜRÜN_ADI']===payload.urun_adi)) await fsDelete('stok_giris', g._id);
+    for (const c of cikislar.filter(c=>c['ÜRÜN_ADI']===payload.urun_adi)) await fsDelete('stok_cikis', c._id);
+    return {status:'ok'};
+  }
+
+  // MÜŞTERİ
+  if (action === 'addMusteri') { await fsAdd('musteriler', { İSİM: payload.isim, ŞEHİR: payload.sehir||'', TELEFON: payload.telefon||'', AÇIKLAMA: payload.aciklama||'', BAŞLANGIÇ_BAKİYE: payload.baslangic_bakiye||0 }); return {status:'ok'}; }
+  if (action === 'addSatis') { await fsAdd('satislar', { TARİH: payload.tarih, MÜŞTERİ: payload.musteri, AÇIKLAMA: payload.aciklama||'', ADET: payload.adet||0, FİYAT: payload.fiyat||0, TUTAR: payload.tutar||0, PARA_BİRİMİ: payload.para_birimi||'TL' }); return {status:'ok'}; }
+  if (action === 'addOdeme') { await fsAdd('odemeler', { TARİH: payload.tarih, MÜŞTERİ: payload.musteri, AÇIKLAMA: payload.aciklama||'', TUTAR: payload.tutar||0 }); return {status:'ok'}; }
+  if (action === 'deleteMusteriTamamen') {
+    const musteriler = await fsGetAll('musteriler');
+    const satislar = await fsGetAll('satislar');
+    const odemeler = await fsGetAll('odemeler');
+    for (const m of musteriler.filter(m=>m['İSİM']===payload.musteri_adi)) await fsDelete('musteriler', m._id);
+    for (const s of satislar.filter(s=>s['MÜŞTERİ']===payload.musteri_adi)) await fsDelete('satislar', s._id);
+    for (const o of odemeler.filter(o=>o['MÜŞTERİ']===payload.musteri_adi)) await fsDelete('odemeler', o._id);
+    return {status:'ok'};
+  }
+
+  // TEDARİKÇİ
+  if (action === 'addTedarikci') { await fsAdd('tedarikciler', { İSİM: payload.isim, ŞEHİR: payload.sehir||'', TELEFON: payload.telefon||'', AÇIKLAMA: payload.aciklama||'' }); return {status:'ok'}; }
+  if (action === 'addAlis') { await fsAdd('alislar', { TARİH: payload.tarih, TEDARİKÇİ: payload.tedarikci, AÇIKLAMA: payload.aciklama||'', TUTAR: payload.tutar||0, ADET: payload.adet||0, FİYAT: payload.fiyat||0, PARA_BİRİMİ: payload.para_birimi||'TL' }); return {status:'ok'}; }
+  if (action === 'addTedarikciOdeme') { await fsAdd('tedarikci_odemeleri', { TARİH: payload.tarih, TEDARİKÇİ: payload.tedarikci, AÇIKLAMA: payload.aciklama||'', TUTAR: payload.tutar||0 }); return {status:'ok'}; }
+  if (action === 'deleteTedarikciTamamen') {
+    const teds = await fsGetAll('tedarikciler');
+    const alis = await fsGetAll('alislar');
+    const tOd = await fsGetAll('tedarikci_odemeleri');
+    for (const t of teds.filter(t=>t['İSİM']===payload.tedarikci_adi)) await fsDelete('tedarikciler', t._id);
+    for (const a of alis.filter(a=>a['TEDARİKÇİ']===payload.tedarikci_adi)) await fsDelete('alislar', a._id);
+    for (const o of tOd.filter(o=>o['TEDARİKÇİ']===payload.tedarikci_adi)) await fsDelete('tedarikci_odemeleri', o._id);
+    return {status:'ok'};
+  }
+
+  // FİŞ
+  if (action === 'addFis') {
+    for (const u of payload.urunler) {
+      await fsAdd('fisler', { FİŞ_NO: payload.fis_no, TARİH: payload.tarih, MÜŞTERİ: payload.musteri, AÇIKLAMA: u.aciklama, ADET: u.adet, BİRİM: u.birim, BİRİM_FİYAT: u.birimFiyat, PARA_BİRİMİ: u.paraBirimi, TUTAR: u.tutar, İNDİRİM: payload.indirim||0, ÖDEME: payload.odeme||0, TOPLAM: payload.toplam||0 });
+    }
+    return {status:'ok'};
+  }
+  if (action === 'deleteFis') {
+    const fisler = await fsGetAll('fisler');
+    for (const f of fisler.filter(f=>f['FİŞ_NO']===payload.fis_no)) await fsDelete('fisler', f._id);
+    return {status:'ok'};
+  }
+  if (action === 'updateFis') {
+    const fisler = await fsGetAll('fisler');
+    for (const f of fisler.filter(f=>f['FİŞ_NO']===payload.fis_no)) await fsDelete('fisler', f._id);
+    for (const u of payload.urunler) {
+      await fsAdd('fisler', { FİŞ_NO: payload.fis_no, TARİH: payload.tarih, MÜŞTERİ: payload.musteri, AÇIKLAMA: u.aciklama, ADET: u.adet, BİRİM: u.birim, BİRİM_FİYAT: u.birimFiyat, PARA_BİRİMİ: u.paraBirimi, TUTAR: u.tutar, İNDİRİM: payload.indirim||0, ÖDEME: payload.odeme||0, TOPLAM: payload.toplam||0 });
+    }
+    return {status:'ok'};
+  }
+
+  // GÜNCELLE / SİL
+  if (action === 'updateRow') {
+    // Hangi koleksiyona göre güncelle
+    const colMap = { 'ÜRÜNLER':'urunler','STOK_GIRIS':'stok_giris','STOK_CIKIS':'stok_cikis','MÜŞTERİLER':'musteriler','SATIŞLAR':'satislar','ÖDEMELER':'odemeler','TEDARİKÇİLER':'tedarikciler','ALIŞLAR':'alislar','TEDARİKÇİ_ÖDEMELERİ':'tedarikci_odemeleri' };
+    const colName = colMap[payload.sheetName];
+    if (!colName) throw new Error('Bilinmeyen koleksiyon: ' + payload.sheetName);
+    if (!payload.rowIndex) throw new Error('ID gerekli');
+    const keys = getColKeys(payload.sheetName);
+    const data = {};
+    keys.forEach((k,i) => { if (payload.newValues[i] !== undefined) data[k] = payload.newValues[i]; });
+    await fsUpdate(colName, payload.rowIndex, data);
+    return {status:'ok'};
+  }
+  if (action === 'deleteRow') {
+    const colMap = { 'ÜRÜNLER':'urunler','STOK_GIRIS':'stok_giris','STOK_CIKIS':'stok_cikis','MÜŞTERİLER':'musteriler','SATIŞLAR':'satislar','ÖDEMELER':'odemeler','TEDARİKÇİLER':'tedarikciler','ALIŞLAR':'alislar','TEDARİKÇİ_ÖDEMELERİ':'tedarikci_odemeleri','FİŞLER':'fisler' };
+    const colName = colMap[payload.sheetName];
+    if (!colName) throw new Error('Bilinmeyen koleksiyon');
+    if (payload.rowIndex) { await fsDelete(colName, payload.rowIndex); return {status:'ok'}; }
+    throw new Error('ID gerekli');
+  }
+
+  throw new Error('Bilinmeyen action: ' + action);
+}
+
+function getColKeys(sheetName) {
+  const map = {
+    'ÜRÜNLER': ['ÜRÜN_ADI','KATEGORİ'],
+    'STOK_GIRIS': ['TARİH','ÜRÜN_ADI','ADET','AÇIKLAMA','MALİYET'],
+    'STOK_CIKIS': ['TARİH','ÜRÜN_ADI','ADET','FİYAT','AÇIKLAMA','SMM'],
+    'MÜŞTERİLER': ['İSİM','ŞEHİR','TELEFON','AÇIKLAMA','BAŞLANGIÇ_BAKİYE'],
+    'SATIŞLAR': ['TARİH','MÜŞTERİ','AÇIKLAMA','ADET','FİYAT','TUTAR','PARA_BİRİMİ'],
+    'ÖDEMELER': ['TARİH','MÜŞTERİ','AÇIKLAMA','TUTAR'],
+    'TEDARİKÇİLER': ['İSİM','ŞEHİR','TELEFON','AÇIKLAMA'],
+    'ALIŞLAR': ['TARİH','TEDARİKÇİ','AÇIKLAMA','TUTAR','ADET','FİYAT','PARA_BİRİMİ'],
+    'TEDARİKÇİ_ÖDEMELERİ': ['TARİH','TEDARİKÇİ','AÇIKLAMA','TUTAR'],
+  };
+  return map[sheetName] || [];
 }
 
 
@@ -1780,15 +1883,16 @@ function showLoginError(id, msg) {
 
 // ── YÜKLE ──
 async function loadAllData() {
+  if (!uid()) return;
   const btn=document.getElementById('syncBtn');
   const icon=document.getElementById('syncIcon');
   btn.disabled=true; icon.style.animation='spin 1s linear infinite';
   try {
     const [u,g,c,m,s,o,f,t,a,to] = await Promise.all([
-      fetchSheet('ÜRÜNLER'), fetchSheet('STOK_GIRIS'), fetchSheet('STOK_CIKIS'),
-      fetchSheet('MÜŞTERİLER'), fetchSheet('SATIŞLAR'), fetchSheet('ÖDEMELER'),
-      fetchSheet('FİŞLER'), fetchSheet('TEDARİKÇİLER'), fetchSheet('ALIŞLAR'),
-      fetchSheet('TEDARİKÇİ_ÖDEMELERİ')
+      fsGetAll('urunler'), fsGetAll('stok_giris'), fsGetAll('stok_cikis'),
+      fsGetAll('musteriler'), fsGetAll('satislar'), fsGetAll('odemeler'),
+      fsGetAll('fisler'), fsGetAll('tedarikciler'), fsGetAll('alislar'),
+      fsGetAll('tedarikci_odemeleri')
     ]);
     DATA.urunler=u; DATA.giris=g; DATA.cikis=c;
     DATA.musteriler=m; DATA.satislar=s; DATA.odemeler=o; DATA.fisler=f;
@@ -2289,10 +2393,10 @@ async function submitBorcDuzenle() {
       const adet=parseInt(document.getElementById('f-borc-duzenle-adet').value)||0;
       const fiyat=parseFloat(document.getElementById('f-borc-duzenle-fiyat').value)||0;
       const tutar=adet*fiyat;
-      await postAction({action:'updateRow',sheetName:'SATIŞLAR',rowIndex:r._row,col0:r['TARİH'],col1:r['MÜŞTERİ'],newValues:[tarih,r['MÜŞTERİ'],ac,adet,fiyat,tutar]});
+      await postAction({action:'updateRow',sheetName:'SATIŞLAR',rowIndex:r._id,newValues:[tarih,r['MÜŞTERİ'],ac,adet,fiyat,tutar]});
     } else {
       const tutar=parseFloat(document.getElementById('f-borc-duzenle-tutar').value)||0;
-      await postAction({action:'updateRow',sheetName:'ÖDEMELER',rowIndex:r._row,col0:r['TARİH'],col1:r['MÜŞTERİ'],newValues:[tarih,r['MÜŞTERİ'],ac,tutar]});
+      await postAction({action:'updateRow',sheetName:'ÖDEMELER',rowIndex:r._id,newValues:[tarih,r['MÜŞTERİ'],ac,tutar]});
     }
     toast('Güncellendi ✓','success'); closeModal('borc-duzenle'); borcEditRow=null; await loadAllData();
   } catch(e) { toast('Hata: '+e.message,'error'); }
@@ -2427,9 +2531,7 @@ async function submitMusteriDuzenle() {
     await postAction({
       action: 'updateRow',
       sheetName: 'MÜŞTERİLER',
-      rowIndex: activeMusteri._row,
-      col0: activeMusteri['İSİM'],
-      col1: activeMusteri['ŞEHİR'] || '',
+      rowIndex: activeMusteri._id,
       newValues: [isim, sehir, tel, ac, Number(bakiye) || 0]
     });
     toast('Cari güncellendi ✓', 'success');
@@ -2652,7 +2754,7 @@ async function submitTedarikciDuzenle() {
   const ac = document.getElementById('f-tedarikci-duzenle-aciklama').value.trim();
   if (!isim) { toast('İsim zorunlu','error'); return; }
   try {
-    await postAction({action:'updateRow',sheetName:'TEDARİKÇİLER',rowIndex:activeTedarikci._row,col0:activeTedarikci['İSİM'],col1:activeTedarikci['ŞEHİR']||'',newValues:[isim,sehir,tel,ac]});
+    await postAction({action:'updateRow',sheetName:'TEDARİKÇİLER',rowIndex:activeTedarikci._id,newValues:[isim,sehir,tel,ac]});
     toast('Tedarikçi güncellendi ✓','success');
     closeModal('tedarikci-duzenle');
     await loadAllData();
@@ -2812,7 +2914,7 @@ async function deleteBorcHareket(i) {
   if (!confirm(`Bu ${tip} kaydını silmek istediğinizden emin misiniz?\n\nTarih: ${r.tarih}\nTutar: ₺${r.tutar.toLocaleString('tr-TR')}\n\nBu işlem GERİ ALINAMAZ.`)) return;
   const sheet = r.tur === 'satis' ? 'SATIŞLAR' : 'ÖDEMELER';
   try {
-    await postAction({action:'deleteRow',sheetName:sheet,rowIndex:r._raw._row,col0:r._raw['TARİH'],col1:r._raw[r.tur==='satis'?'MÜŞTERİ':'MÜŞTERİ']});
+    await postAction({action:'deleteRow',sheetName:sheet,rowIndex:r._raw._id});
     toast('Kayıt silindi ✓','success');
     await loadAllData();
   } catch(e) { toast('Hata: '+e.message,'error'); }
@@ -2825,7 +2927,7 @@ async function deleteTedarikciHareket(i) {
   if (!confirm(`Bu ${tip} kaydını silmek istediğinizden emin misiniz?\n\nTarih: ${r.tarih}\nTutar: ₺${r.tutar.toLocaleString('tr-TR')}\n\nBu işlem GERİ ALINAMAZ.`)) return;
   const sheet = r.tur === 'alis' ? 'ALIŞLAR' : 'TEDARİKÇİ_ÖDEMELERİ';
   try {
-    await postAction({action:'deleteRow',sheetName:sheet,rowIndex:r._raw._row,col0:r._raw['TARİH'],col1:r._raw['TEDARİKÇİ']});
+    await postAction({action:'deleteRow',sheetName:sheet,rowIndex:r._raw._id});
     toast('Kayıt silindi ✓','success');
     await loadAllData();
   } catch(e) { toast('Hata: '+e.message,'error'); }
@@ -2838,7 +2940,7 @@ async function deleteStokHareket(i) {
   if (!confirm(`Bu ${tip} kaydını silmek istediğinizden emin misiniz?\n\nTarih: ${r.tarih}\nAdet: ${r.adet}\n\nBu işlem GERİ ALINAMAZ.`)) return;
   const sheet = r.tur === 'giris' ? 'STOK_GIRIS' : 'STOK_CIKIS';
   try {
-    await postAction({action:'deleteRow',sheetName:sheet,rowIndex:r._raw._row,col0:r._raw['TARİH'],col1:r._raw['ÜRÜN_ADI']});
+    await postAction({action:'deleteRow',sheetName:sheet,rowIndex:r._raw._id});
     toast('Kayıt silindi ✓','success');
     await loadAllData();
   } catch(e) { toast('Hata: '+e.message,'error'); }
