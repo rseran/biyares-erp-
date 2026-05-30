@@ -1524,7 +1524,7 @@ td { padding: 10px 13px; font-size: 13px; }
 <div class="modal-overlay" id="modal-urun">
   <div class="modal">
     <div class="modal-title">📦 Yeni Ürün Ekle</div>
-    <div class="form-group"><label class="form-label">Ürün Adı *</label><input class="form-input" id="f-urun-adi" placeholder="örn. Keten Gömlek"></div>
+    <div class="form-group"><label class="form-label">Ürün Adı *</label><input class="form-input" id="f-urun-adi" placeholder="örn. Wrangler Kot"></div>
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Kategori</label>
@@ -1781,7 +1781,7 @@ td { padding: 10px 13px; font-size: 13px; }
     <div class="modal-title" style="color:var(--red)">📥 Alış Kaydı</div>
     <div id="alis-tedarikci-label" style="font-size:13px;color:var(--text2);margin-bottom:16px;font-family:var(--mono)"></div>
     <div class="form-group"><label class="form-label">Tarih *</label><input class="form-input" id="f-alis-tarih" type="date"></div>
-    <div class="form-group"><label class="form-label">Açıklama *</label><input class="form-input" id="f-alis-aciklama" placeholder="örn. Gelen Polo Yaka"></div>
+    <div class="form-group"><label class="form-label">Açıklama *</label><input class="form-input" id="f-alis-aciklama" placeholder="örn. Tişört alışı"></div>
     <div class="form-row">
       <div class="form-group"><label class="form-label">Adet *</label><input class="form-input" id="f-alis-adet" type="number" min="0" step="1" placeholder="0" inputmode="numeric" oninput="updateAlisTutar()"></div>
       <div class="form-group"><label class="form-label">Birim Fiyat *</label>
@@ -3470,7 +3470,7 @@ function openModal(type) {
   }
   document.getElementById('modal-'+type).classList.add('open');
 }
-function closeModal(type) { document.getElementById('modal-'+type).classList.remove('open'); }
+function closeModal(type) { const el = document.getElementById('modal-'+type); if (el) { el.classList.remove('open'); el.style.display = 'none'; } }
 document.querySelectorAll('.modal-overlay').forEach(el=>{ el.addEventListener('click',e=>{ if(e.target===el) el.classList.remove('open'); }); });
 
 function dlCSV(csv, filename) {
