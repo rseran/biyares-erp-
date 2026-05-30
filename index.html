@@ -40,6 +40,7 @@
       document.getElementById('user-display').textContent = user.displayName || user.phoneNumber || 'Kullanıcı';
       loadAllData();
       firmaYukle();
+      onboardingKontrol(user);
     } else {
       window._currentUser = null;
       document.getElementById('login-screen').style.display = 'flex';
@@ -971,9 +972,19 @@ td { padding: 10px 13px; font-size: 13px; }
         <div class="dash-section-title">👤 Profil</div>
         <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
           <div id="hesabim-avatar" style="width:56px;height:56px;border-radius:50%;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-size:22px;border:2px solid var(--accent-dim)">👤</div>
-          <div>
-            <div id="hesabim-isim" style="font-size:16px;font-weight:800">—</div>
-            <div id="hesabim-email" style="font-size:12px;color:var(--text3);font-family:var(--mono)">—</div>
+          <div style="flex:1">
+            <div style="display:flex;align-items:center;gap:8px">
+              <div id="hesabim-isim-goster" style="font-size:16px;font-weight:800">—</div>
+              <button onclick="hesabimAdDuzenle()" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:12px;padding:2px 6px;border-radius:4px;border:1px solid var(--border)">✏️ Düzenle</button>
+            </div>
+            <div id="hesabim-isim-form" style="display:none;margin-top:6px">
+              <div style="display:flex;gap:6px">
+                <input class="form-input" id="hesabim-isim-input" placeholder="Ad Soyad" style="flex:1;font-size:13px">
+                <button class="btn btn-primary btn-sm" onclick="hesabimAdKaydet()">Kaydet</button>
+                <button class="btn btn-ghost btn-sm" onclick="hesabimAdIptal()">İptal</button>
+              </div>
+            </div>
+            <div id="hesabim-email" style="font-size:12px;color:var(--text3);font-family:var(--mono);margin-top:2px">—</div>
             <div id="hesabim-giris-yontemi" style="font-size:11px;color:var(--text3);margin-top:2px"></div>
           </div>
         </div>
@@ -1826,6 +1837,47 @@ td { padding: 10px 13px; font-size: 13px; }
       </button>
     </div>
     <button class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;margin-top:10px" onclick="closeModal('paylasim')">İptal</button>
+  </div>
+</div>
+
+
+<!-- ONBOARDING MODALI -->
+<div class="modal-overlay" id="modal-onboarding" style="display:none;z-index:10000;background:rgba(0,0,0,0.7)">
+  <div class="modal" style="max-width:420px;padding:40px 36px">
+
+    <!-- Logo -->
+    <div style="text-align:center;margin-bottom:32px">
+      <svg width="120" viewBox="0 0 400 80" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="0" width="72" height="72" rx="16" fill="#ff8c00"/>
+        <rect x="14" y="12" width="26" height="15" rx="7.5" fill="#fff"/>
+        <rect x="14" y="31" width="23" height="13" rx="6.5" fill="#fff"/>
+        <rect x="14" y="48" width="19" height="13" rx="6.5" fill="#fff"/>
+        <rect x="44" y="12" width="22" height="22" rx="11" fill="#fff"/>
+        <polygon points="46,37 55,37 66,72 57,72" fill="#fff"/>
+        <text x="86" y="52" style="font-family:sans-serif;font-weight:800;font-size:42px;fill:#ff8c00;letter-spacing:-1px">biyares</text>
+      </svg>
+    </div>
+
+    <div style="font-size:20px;font-weight:800;margin-bottom:6px">Hesabınızı oluşturun</div>
+    <div style="font-size:13px;color:var(--text3);margin-bottom:28px;font-family:var(--mono)">Başlamak için birkaç bilgi yeterli.</div>
+
+    <div class="form-group">
+      <label class="form-label">Ad Soyad</label>
+      <input class="form-input" id="onboarding-isim" placeholder="örn. Ramazan Şeran" autocomplete="name">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Firma Adı <span style="color:var(--text3);font-size:10px">— isteğe bağlı</span></label>
+      <input class="form-input" id="onboarding-firma" placeholder="örn. Şeran Tekstil">
+    </div>
+
+    <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px;padding:14px" onclick="onboardingKaydet()">
+      Başla →
+    </button>
+
+    <div style="text-align:center;font-size:11px;color:var(--text3);margin-top:16px;font-family:var(--mono)">
+      Devam ederek Kullanım Koşulları'nı kabul etmiş olursunuz.
+    </div>
+
   </div>
 </div>
 
@@ -4199,7 +4251,7 @@ async function renderHesabim() {
   if (!user) return;
 
   // Profil
-  document.getElementById('hesabim-isim').textContent = user.displayName || user.phoneNumber || 'Kullanıcı';
+  document.getElementById('hesabim-isim-goster').textContent = user.displayName || user.phoneNumber || 'Kullanıcı';
   document.getElementById('hesabim-email').textContent = user.email || user.phoneNumber || '';
   document.getElementById('hesabim-giris-yontemi').textContent = user.providerData?.[0]?.providerId === 'google.com' ? '🔵 Google ile giriş' : '📱 Telefon ile giriş';
 
@@ -4336,6 +4388,71 @@ function sidebarKapat() {
   document.querySelector('.sidebar').classList.remove('open');
   document.getElementById('sidebar-overlay').classList.remove('open');
   document.body.style.overflow = '';
+}
+
+
+// ── ONBOARDING ──
+async function onboardingKontrol(user) {
+  if (!user) return;
+  // Google ile girişte displayName zaten var
+  if (user.displayName) return;
+  // Telefon ile girişte displayName yok — modal aç
+  if (!user.displayName && user.phoneNumber) {
+    document.getElementById('modal-onboarding').style.display = 'flex';
+  }
+}
+
+async function onboardingKaydet() {
+  const isim = document.getElementById('onboarding-isim').value.trim();
+  const firma = document.getElementById('onboarding-firma').value.trim();
+  if (!isim) { toast('Ad Soyad zorunlu', 'error'); return; }
+  try {
+    const { updateProfile } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+    await updateProfile(window._currentUser, { displayName: isim });
+    window._currentUser.displayName = isim;
+    const sadecead = isim.split(' ')[0];
+    document.getElementById('user-display').textContent = sadecead;
+    if (document.getElementById('hesabim-isim')) document.getElementById('hesabim-isim').textContent = isim;
+    // Firma adını da kaydet
+    if (firma) {
+      document.getElementById('hesabim-firma-adi').value = firma;
+      await firmaKaydet();
+    }
+    closeModal('onboarding');
+    renderDashboard();
+    toast('Hoş geldiniz, ' + sadecead + '! 🎉', 'success');
+  } catch(e) { toast('Hata: ' + e.message, 'error'); }
+}
+
+
+// ── AD DÜZENLEME ──
+function hesabimAdDuzenle() {
+  const isim = document.getElementById('hesabim-isim-goster').textContent;
+  document.getElementById('hesabim-isim-input').value = isim === '—' ? '' : isim;
+  document.getElementById('hesabim-isim-goster').closest('div').querySelector('button').style.display = 'none';
+  document.getElementById('hesabim-isim-form').style.display = 'block';
+  document.getElementById('hesabim-isim-input').focus();
+}
+
+function hesabimAdIptal() {
+  document.getElementById('hesabim-isim-form').style.display = 'none';
+  document.getElementById('hesabim-isim-goster').closest('div').querySelector('button').style.display = '';
+}
+
+async function hesabimAdKaydet() {
+  const isim = document.getElementById('hesabim-isim-input').value.trim();
+  if (!isim) { toast('Ad Soyad boş olamaz', 'error'); return; }
+  try {
+    const { updateProfile } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+    await updateProfile(window._currentUser, { displayName: isim });
+    window._currentUser.displayName = isim;
+    const sadecead = isim.split(' ')[0];
+    document.getElementById('hesabim-isim-goster').textContent = isim;
+    document.getElementById('user-display').textContent = sadecead;
+    hesabimAdIptal();
+    renderDashboard();
+    toast('Ad güncellendi ✓', 'success');
+  } catch(e) { toast('Hata: ' + e.message, 'error'); }
 }
 
 function kargoYakinda() {
