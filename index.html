@@ -39,6 +39,7 @@
       document.getElementById('app').style.display = 'flex';
       document.getElementById('user-display').textContent = user.displayName || user.phoneNumber || 'Kullanıcı';
       loadAllData();
+      firmaYukle();
     } else {
       window._currentUser = null;
       document.getElementById('login-screen').style.display = 'flex';
@@ -791,9 +792,9 @@ td { padding: 10px 13px; font-size: 13px; }
   </nav>
   <div class="sidebar-footer">
     <div style="display:flex;align-items:center;gap:8px;padding:8px 4px;margin-bottom:8px;border-bottom:1px solid var(--border);padding-bottom:12px">
-      <div style="width:32px;height:32px;border-radius:50%;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-size:14px">👤</div>
+      <div style="width:32px;height:32px;border-radius:50%;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer" onclick="showPage('hesabim')">👤</div>
       <div style="flex:1;overflow:hidden">
-        <div id="user-display" style="font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</div>
+        <div id="user-display" style="font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer" onclick="showPage('hesabim')">—</div>
         <div style="font-size:10px;color:var(--text3);font-family:var(--mono)">biyares</div>
       </div>
       <button onclick="cikisYap()" title="Çıkış Yap" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:14px;padding:4px">🚪</button>
@@ -898,6 +899,95 @@ td { padding: 10px 13px; font-size: 13px; }
           <a onclick="showPage('bildirimler')">Tümü →</a>
         </div>
         <div id="dash-bildirim-preview"></div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ===== HESABIM ===== -->
+  <div id="page-hesabim" class="page">
+    <div class="topbar">
+      <div class="page-title">👤 Hesabım</div>
+    </div>
+    <div class="content" style="max-width:600px">
+
+      <!-- Profil Bilgileri -->
+      <div class="dash-section" style="margin-bottom:16px">
+        <div class="dash-section-title">👤 Profil</div>
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
+          <div id="hesabim-avatar" style="width:56px;height:56px;border-radius:50%;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-size:22px;border:2px solid var(--accent-dim)">👤</div>
+          <div>
+            <div id="hesabim-isim" style="font-size:16px;font-weight:800">—</div>
+            <div id="hesabim-email" style="font-size:12px;color:var(--text3);font-family:var(--mono)">—</div>
+            <div id="hesabim-giris-yontemi" style="font-size:11px;color:var(--text3);margin-top:2px"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Firma Bilgileri -->
+      <div class="dash-section" style="margin-bottom:16px">
+        <div class="dash-section-title">🏢 Firma Bilgileri</div>
+        <div class="form-group"><label class="form-label">Firma Adı</label><input class="form-input" id="hesabim-firma-adi" placeholder="örn. Biyares Tekstil" oninput="firmaKaydetDebounce()"></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Telefon</label><input class="form-input" id="hesabim-firma-tel" placeholder="0532 xxx xx xx" oninput="firmaKaydetDebounce()"></div>
+          <div class="form-group"><label class="form-label">Adres</label><input class="form-input" id="hesabim-firma-adres" placeholder="İstanbul" oninput="firmaKaydetDebounce()"></div>
+        </div>
+        <!-- Logo -->
+        <div class="form-group">
+          <label class="form-label">Firma Logosu</label>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div class="logo-upload-area" id="hesabim-logo-area" onclick="document.getElementById('hesabim-logo-input').click()" style="width:100px;height:70px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;margin:0">
+              <img id="hesabim-logo-preview" src="" style="display:none;max-height:56px;max-width:88px;object-fit:contain">
+              <span id="hesabim-logo-hint" style="font-size:11px;color:var(--text3)">📷 Logo Ekle</span>
+            </div>
+            <input type="file" id="hesabim-logo-input" accept="image/*" style="display:none" onchange="hesabimLogoYukle(event)">
+            <button class="btn btn-ghost btn-sm" id="hesabim-logo-sil" style="display:none" onclick="hesabimLogoSil()">✕ Logoyu Sil</button>
+          </div>
+        </div>
+        <div id="firma-kayit-durum" style="font-size:11px;color:var(--green);font-family:var(--mono);display:none">✓ Kaydedildi</div>
+      </div>
+
+      <!-- Kullanım Özeti -->
+      <div class="dash-section" style="margin-bottom:16px">
+        <div class="dash-section-title">📊 Kullanım Özeti</div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
+          <div style="background:var(--surface2);border-radius:var(--radius);padding:14px;text-align:center">
+            <div style="font-size:24px;font-weight:800;font-family:var(--mono);color:var(--accent)" id="ozet-musteri-sayisi">—</div>
+            <div style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-top:4px">MÜŞTERİ</div>
+          </div>
+          <div style="background:var(--surface2);border-radius:var(--radius);padding:14px;text-align:center">
+            <div style="font-size:24px;font-weight:800;font-family:var(--mono);color:var(--accent)" id="ozet-urun-sayisi">—</div>
+            <div style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-top:4px">ÜRÜN</div>
+          </div>
+          <div style="background:var(--surface2);border-radius:var(--radius);padding:14px;text-align:center">
+            <div style="font-size:24px;font-weight:800;font-family:var(--mono);color:var(--accent)" id="ozet-fis-sayisi">—</div>
+            <div style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-top:4px">FİŞ</div>
+          </div>
+          <div style="background:var(--surface2);border-radius:var(--radius);padding:14px;text-align:center">
+            <div style="font-size:24px;font-weight:800;font-family:var(--mono);color:var(--accent)" id="ozet-tedarikci-sayisi">—</div>
+            <div style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-top:4px">TEDARİKÇİ</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hesap İşlemleri -->
+      <div class="dash-section" style="margin-bottom:16px">
+        <div class="dash-section-title">🔐 Hesap</div>
+        <button class="btn btn-ghost" style="width:100%;justify-content:center;margin-bottom:8px" onclick="cikisYap()">
+          🚪 Çıkış Yap
+        </button>
+        <button class="btn btn-red btn-sm" style="width:100%;justify-content:center;opacity:0.6" onclick="hesabiSil()">
+          🗑 Hesabı Sil
+        </button>
+        <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:8px;font-family:var(--mono)">
+          Hesabı silince tüm veriler kalıcı olarak silinir.
+        </div>
+      </div>
+
+      <!-- Versiyon -->
+      <div style="text-align:center;font-size:11px;color:var(--text3);font-family:var(--mono);padding:8px">
+        biyares v1.0 — Commerce. Engineered.
       </div>
 
     </div>
@@ -3215,7 +3305,7 @@ function showPage(page) {
   document.getElementById('page-'+page).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   const map={
-    'dashboard':'nav-dashboard','bildirimler':'nav-dashboard',
+    'dashboard':'nav-dashboard','bildirimler':'nav-dashboard','hesabim':'nav-dashboard',
     'stok-urunler':'nav-stok-urunler','stok-detay':'nav-stok-urunler',
     'stok-hareketler':'nav-stok-urunler','stok-ozet':'nav-stok-ozet',
     'borc-musteriler':'nav-borc-musteriler','borc-detay':'nav-borc-musteriler',
@@ -3233,6 +3323,7 @@ function showPage(page) {
   if (modMap[page]) openModule(modMap[page]);
   if (page === 'bildirimler') renderBildirimSayfasi();
   if (page === 'dashboard') renderDashboard();
+  if (page === 'hesabim') renderHesabim();
 }
 
 function toggleModule(id) {
@@ -4052,6 +4143,143 @@ async function tedarikciEkstreWhatsappDosya(format) {
       setTimeout(() => window.open('https://wa.me/', '_blank'), 1000);
     }
   }, 'image/png');
+}
+
+
+// ══════════════════════════════════════
+//  HESABIM
+// ══════════════════════════════════════
+let _firmaDebounceTimer = null;
+
+async function renderHesabim() {
+  const user = window._currentUser;
+  if (!user) return;
+
+  // Profil
+  document.getElementById('hesabim-isim').textContent = user.displayName || user.phoneNumber || 'Kullanıcı';
+  document.getElementById('hesabim-email').textContent = user.email || user.phoneNumber || '';
+  document.getElementById('hesabim-giris-yontemi').textContent = user.providerData?.[0]?.providerId === 'google.com' ? '🔵 Google ile giriş' : '📱 Telefon ile giriş';
+
+  // Kullanım özeti
+  document.getElementById('ozet-musteri-sayisi').textContent = DATA.musteriler.length;
+  document.getElementById('ozet-urun-sayisi').textContent = DATA.urunler.length;
+  document.getElementById('ozet-fis-sayisi').textContent = new Set(DATA.fisler.map(f=>f['FİŞ_NO'])).size;
+  document.getElementById('ozet-tedarikci-sayisi').textContent = DATA.tedarikciler.length;
+
+  // Firma bilgilerini Firestore'dan yükle
+  await firmaYukle();
+}
+
+async function firmaYukle() {
+  try {
+    const { doc, getDoc, collection } = window._firebase;
+    const db = window._firebase.db;
+    const ref = doc(collection(db, 'users'), uid());
+    const snap = await getDoc(ref);
+    if (snap.exists()) {
+      const data = snap.data();
+      const firma = data.firma || {};
+      document.getElementById('hesabim-firma-adi').value = firma.adi || '';
+      document.getElementById('hesabim-firma-tel').value = firma.tel || '';
+      document.getElementById('hesabim-firma-adres').value = firma.adres || '';
+
+      // Logo
+      if (firma.logo) {
+        document.getElementById('hesabim-logo-preview').src = firma.logo;
+        document.getElementById('hesabim-logo-preview').style.display = 'block';
+        document.getElementById('hesabim-logo-hint').style.display = 'none';
+        document.getElementById('hesabim-logo-sil').style.display = 'inline-flex';
+        // localStorage da güncelle (fişler için)
+        localStorage.setItem('biyares_logo', firma.logo);
+      }
+      // localStorage firma bilgilerini güncelle
+      localStorage.setItem('biyares_firma', JSON.stringify({ adi: firma.adi||'', tel: firma.tel||'', adres: firma.adres||'' }));
+    }
+  } catch(e) { console.error('Firma yükleme hatası:', e); }
+}
+
+async function firmaKaydet() {
+  if (!uid()) return;
+  const adi = document.getElementById('hesabim-firma-adi').value.trim();
+  const tel = document.getElementById('hesabim-firma-tel').value.trim();
+  const adres = document.getElementById('hesabim-firma-adres').value.trim();
+  const logoData = localStorage.getItem('biyares_logo') || '';
+
+  try {
+    const { doc, setDoc, collection } = window._firebase;
+    const db = window._firebase.db;
+    const ref = doc(collection(db, 'users'), uid());
+    await setDoc(ref, { firma: { adi, tel, adres, logo: logoData } }, { merge: true });
+
+    // localStorage güncelle
+    localStorage.setItem('biyares_firma', JSON.stringify({ adi, tel, adres }));
+
+    const durum = document.getElementById('firma-kayit-durum');
+    durum.style.display = 'block';
+    setTimeout(() => { durum.style.display = 'none'; }, 2000);
+  } catch(e) { toast('Kayıt hatası: ' + e.message, 'error'); }
+}
+
+function firmaKaydetDebounce() {
+  clearTimeout(_firmaDebounceTimer);
+  _firmaDebounceTimer = setTimeout(firmaKaydet, 1000);
+}
+
+function hesabimLogoYukle(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async (ev) => {
+    const logoData = ev.target.result;
+    localStorage.setItem('biyares_logo', logoData);
+    document.getElementById('hesabim-logo-preview').src = logoData;
+    document.getElementById('hesabim-logo-preview').style.display = 'block';
+    document.getElementById('hesabim-logo-hint').style.display = 'none';
+    document.getElementById('hesabim-logo-sil').style.display = 'inline-flex';
+    // Fişlerdeki logo önizlemesini de güncelle
+    logoDataUrl = logoData;
+    document.getElementById('logo-preview').src = logoData;
+    document.getElementById('logo-preview').style.display = 'block';
+    document.getElementById('logo-hint').style.display = 'none';
+    document.getElementById('logo-sil-btn').style.display = 'block';
+    await firmaKaydet();
+  };
+  reader.readAsDataURL(file);
+}
+
+async function hesabimLogoSil() {
+  localStorage.removeItem('biyares_logo');
+  logoDataUrl = null;
+  document.getElementById('hesabim-logo-preview').src = '';
+  document.getElementById('hesabim-logo-preview').style.display = 'none';
+  document.getElementById('hesabim-logo-hint').style.display = 'block';
+  document.getElementById('hesabim-logo-sil').style.display = 'none';
+  document.getElementById('logo-preview').src = '';
+  document.getElementById('logo-preview').style.display = 'none';
+  document.getElementById('logo-hint').style.display = 'block';
+  document.getElementById('logo-sil-btn').style.display = 'none';
+  await firmaKaydet();
+}
+
+async function hesabiSil() {
+  if (!confirm('Hesabınızı silmek istediğinizden emin misiniz?\n\nTüm verileriniz (müşteriler, stok, fişler) kalıcı olarak silinecek!\n\nBu işlem GERİ ALINAMAZ.')) return;
+  if (!confirm('Son kez onaylıyorum — tüm verilerimi sil.')) return;
+  try {
+    toast('Veriler siliniyor...', 'success');
+    // Tüm koleksiyonları sil
+    const cols = ['urunler','stok_giris','stok_cikis','musteriler','satislar','odemeler','fisler','tedarikciler','alislar','tedarikci_odemeleri'];
+    for (const c of cols) {
+      const items = await fsGetAll(c);
+      for (const item of items) await fsDelete(c, item._id);
+    }
+    // Kullanıcı dökümanını sil
+    const { doc, deleteDoc, collection } = window._firebase;
+    const db = window._firebase.db;
+    await deleteDoc(doc(collection(db, 'users'), uid()));
+    // Auth kullanıcısını sil
+    await window._currentUser.delete();
+    toast('Hesap silindi', 'success');
+  } catch(e) { toast('Hata: ' + e.message, 'error'); }
 }
 
 function kargoYakinda() {
