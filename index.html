@@ -347,12 +347,49 @@ td { padding: 10px 13px; font-size: 13px; }
 @keyframes blink { 0%,80%,100%{opacity:0.15} 40%{opacity:1} }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* MOBİL */
 @media(max-width:700px) {
-  .sidebar { display: none; }
-  .aksiyon-grid { grid-template-columns: 1fr; }
-  .ozet-metrics { grid-template-columns: repeat(3,1fr); }
+  .sidebar {
+    position: fixed; top: 0; left: -260px; z-index: 999;
+    height: 100vh; width: 240px;
+    transition: left 0.25s ease;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.12);
+  }
+  .sidebar.open { left: 0; }
+  .sidebar-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4); z-index: 998;
+  }
+  .sidebar-overlay.open { display: block; }
+  .main { width: 100%; }
+  .mobile-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px; background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 10;
+  }
+  .mobile-menu-btn {
+    background: none; border: none; cursor: pointer;
+    padding: 6px; border-radius: var(--radius);
+    color: var(--text); display: flex; align-items: center;
+  }
+  .mobile-menu-btn:hover { background: var(--surface2); }
+  .mobile-logo { font-size: 18px; font-weight: 800; color: var(--accent); font-family: var(--font); }
+  .topbar { display: none; }
+  .aksiyon-grid { grid-template-columns: 1fr 1fr; }
+  .ozet-metrics { grid-template-columns: repeat(2,1fr); }
   .borc-ozet-grid { grid-template-columns: 1fr; }
-  .content { padding: 16px; }
+  .content { padding: 14px 16px; }
+  .dash-grid { grid-template-columns: repeat(2,1fr); }
+  .dash-row { grid-template-columns: 1fr; }
+  .hizli-islem-grid { grid-template-columns: repeat(2,1fr); }
+  .fis-preview-wrap { flex-direction: column; }
+  .fis-onizleme { width: 100%; }
+  .form-row { grid-template-columns: 1fr; }
+}
+@media(min-width:701px) {
+  .mobile-header { display: none; }
+  .sidebar-overlay { display: none !important; }
 }
 
 /* ===== SİPARİŞ FİŞİ ===== */
@@ -641,6 +678,9 @@ td { padding: 10px 13px; font-size: 13px; }
 
 <div class="app" id="app" style="display:none">
 
+<!-- Sidebar Overlay (mobil) -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="sidebarKapat()"></div>
+
 <!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="logo" style="cursor:pointer;padding:18px 16px 14px" onclick="showPage('dashboard')">
@@ -816,6 +856,17 @@ td { padding: 10px 13px; font-size: 13px; }
 </aside>
 
 <main class="main">
+  <!-- MOBİL HEADER -->
+  <div class="mobile-header">
+    <button class="mobile-menu-btn" onclick="sidebarAc()">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <span class="mobile-logo">biyares</span>
+    <button class="mobile-menu-btn" onclick="showPage('bildirimler')" style="position:relative">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span class="bildirim-badge" id="bildirim-badge-mobil" style="display:none;top:-2px;right:-2px">0</span>
+    </button>
+  </div>
 
   <!-- ===== DASHBOARD ===== -->
   <div id="page-dashboard" class="page active">
@@ -1191,7 +1242,10 @@ td { padding: 10px 13px; font-size: 13px; }
         <button class="back-btn" onclick="showPage('borc-hareketler')">← Geri</button>
         <div class="page-title" id="ekstre-baslik">Hesap Ekstresi</div>
       </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <label class="firma-toggle" style="font-size:12px">
+          <input type="checkbox" id="ekstre-firma-goster" checked> Firma Bilgisi
+        </label>
         <button class="btn btn-ghost btn-sm" onclick="ekstrePDFIndir()">🖨 Yazdır / PDF</button>
         <button class="btn btn-ghost btn-sm" onclick="ekstrePNGIndir()">🖼 PNG İndir</button>
         <button class="btn btn-primary btn-sm" onclick="whatsappPaylasSec('ekstre', activeMusteri?.['İSİM']||'')">📲 WhatsApp</button>
@@ -1300,7 +1354,10 @@ td { padding: 10px 13px; font-size: 13px; }
         <button class="back-btn" onclick="showPage('tedarikci-hareketler')">← Geri</button>
         <div class="page-title" id="tedarikci-ekstre-baslik">Tedarikçi Ekstresi</div>
       </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <label class="firma-toggle" style="font-size:12px">
+          <input type="checkbox" id="tedarikci-ekstre-firma-goster" checked> Firma Bilgisi
+        </label>
         <button class="btn btn-ghost btn-sm" onclick="tedarikciEkstrePDF()">🖨 Yazdır / PDF</button>
         <button class="btn btn-ghost btn-sm" onclick="tedarikciEkstrePNG()">🖼 PNG İndir</button>
         <button class="btn btn-primary btn-sm" onclick="whatsappPaylasSec('tedarikci', activeTedarikci?.['İSİM']||'')">📲 WhatsApp</button>
@@ -1334,30 +1391,17 @@ td { padding: 10px 13px; font-size: 13px; }
 
         <!-- FİRMA BİLGİLERİ -->
         <div class="fis-section">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-            <span class="fis-section-title" style="margin:0">🏢 Firma Bilgileri</span>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span class="fis-section-title" style="margin:0">🏢 Firma Bilgileri</span>
+              <span id="fis-firma-ozet" style="font-size:12px;color:var(--text3);font-family:var(--mono)"></span>
+            </div>
             <label class="firma-toggle">
-              <input type="checkbox" id="fis-firma-goster" checked onchange="toggleFirma()"> Fişte Göster
+              <input type="checkbox" id="fis-firma-goster" checked onchange="saveFirmaInfo()"> Fişte Göster
             </label>
           </div>
-          <div id="fis-firma-alani">
-            <div style="display:flex;gap:16px;align-items:flex-start">
-              <div>
-                <div class="logo-upload-area" id="logo-upload-area" onclick="document.getElementById('logo-input').click()" style="width:120px;height:80px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px">
-                  <img id="logo-preview" src="" style="display:none;max-height:60px;max-width:100px">
-                  <span class="upload-hint" id="logo-hint">📷 Logo Ekle</span>
-                </div>
-                <input type="file" id="logo-input" accept="image/*" style="display:none" onchange="logoYukle(event)">
-                <button class="btn btn-ghost btn-sm" id="logo-sil-btn" style="display:none;margin-top:6px;width:100%" onclick="logoSil()">✕ Sil</button>
-              </div>
-              <div style="flex:1">
-                <div class="form-group"><label class="form-label">Firma Adı</label><input class="form-input" id="fis-firma-adi" placeholder="Biyares Tekstil" oninput="saveFirmaInfo()"></div>
-                <div class="form-row">
-                  <div class="form-group"><label class="form-label">Telefon</label><input class="form-input" id="fis-firma-tel" placeholder="0532 xxx xx xx" oninput="saveFirmaInfo()"></div>
-                  <div class="form-group"><label class="form-label">Adres</label><input class="form-input" id="fis-firma-adres" placeholder="İstanbul" oninput="saveFirmaInfo()"></div>
-                </div>
-              </div>
-            </div>
+          <div style="margin-top:10px;font-size:12px;color:var(--text3)">
+            Firma bilgilerini <span style="color:var(--accent);cursor:pointer;font-weight:700" onclick="showPage('hesabim')">Hesabım</span> bölümünden düzenleyebilirsiniz.
           </div>
         </div>
 
@@ -3172,6 +3216,7 @@ function ekstreOlustur() {
   const today = new Date().toLocaleDateString('tr-TR');
   const bakiye = calcMusteriBakiye(isim);
 
+  const firmaGosterEkstre = document.getElementById('ekstre-firma-goster')?.checked !== false;
   const firmaInfo = localStorage.getItem('biyares_firma') ? JSON.parse(localStorage.getItem('biyares_firma')) : {};
   const firmaAdi = firmaInfo.adi || 'biyares';
   const firmaTel = firmaInfo.tel || '';
@@ -3182,10 +3227,10 @@ function ekstreOlustur() {
     <div class="ekstre-onizleme" id="ekstre-element">
       <div class="ekstre-header">
         <div>
-          ${logoData ? `<img src="${logoData}" style="max-height:14mm;max-width:30mm;object-fit:contain;display:block;margin-bottom:3px">` : ''}
-          <div style="font-size:13px;font-weight:700">${esc(firmaAdi||'biyares')}</div>
-          ${firmaTel ? `<div style="font-size:10px;color:#555">${esc(firmaTel)}</div>` : ''}
-          ${firmaAdres ? `<div style="font-size:10px;color:#555">${esc(firmaAdres)}</div>` : ''}
+          ${firmaGosterEkstre && logoData ? `<img src="${logoData}" style="max-height:14mm;max-width:30mm;object-fit:contain;display:block;margin-bottom:3px">` : ''}
+          ${firmaGosterEkstre ? `<div style="font-size:13px;font-weight:700">${esc(firmaAdi||'biyares')}</div>` : '<div style="font-size:13px;font-weight:700">biyares</div>'}
+          ${firmaGosterEkstre && firmaTel ? `<div style="font-size:10px;color:#555">${esc(firmaTel)}</div>` : ''}
+          ${firmaGosterEkstre && firmaAdres ? `<div style="font-size:10px;color:#555">${esc(firmaAdres)}</div>` : ''}
         </div>
         <div class="ekstre-baslik" style="text-align:right">
           <h2>HESAP EKSTRESİ</h2>
@@ -3303,6 +3348,7 @@ async function ekstreWhatsapp() {
 function showPage(page) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
+  sidebarKapat();
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   const map={
     'dashboard':'nav-dashboard','bildirimler':'nav-dashboard','hesabim':'nav-dashboard',
@@ -3386,53 +3432,33 @@ let fisUrunler = [];
 let fisEditNo = null;
 let logoDataUrl = null;
 
-// Firma bilgilerini localStorage'a kaydet
+// Firma toggle kaydet
 function saveFirmaInfo() {
-  const info = {
-    adi: document.getElementById('fis-firma-adi').value,
-    tel: document.getElementById('fis-firma-tel').value,
-    adres: document.getElementById('fis-firma-adres').value,
-    goster: document.getElementById('fis-firma-goster').checked
-  };
-  localStorage.setItem('biyares_firma', JSON.stringify(info));
+  try {
+    const info = JSON.parse(localStorage.getItem('biyares_firma') || '{}');
+    info.goster = document.getElementById('fis-firma-goster').checked;
+    localStorage.setItem('biyares_firma', JSON.stringify(info));
+    updateFirmaOzet();
+  } catch(e) {}
 }
+
 function loadFirmaInfo() {
   try {
     const info = JSON.parse(localStorage.getItem('biyares_firma') || '{}');
-    if (info.adi) document.getElementById('fis-firma-adi').value = info.adi;
-    if (info.tel) document.getElementById('fis-firma-tel').value = info.tel;
-    if (info.adres) document.getElementById('fis-firma-adres').value = info.adres;
-    if (info.goster === false) { document.getElementById('fis-firma-goster').checked = false; toggleFirma(); }
-    const logo = localStorage.getItem('biyares_logo');
-    if (logo) { logoDataUrl = logo; document.getElementById('logo-preview').src = logo; document.getElementById('logo-preview').style.display = 'block'; document.getElementById('logo-hint').style.display = 'none'; document.getElementById('logo-sil-btn').style.display = 'block'; }
+    if (info.goster === false) {
+      document.getElementById('fis-firma-goster').checked = false;
+    }
+    updateFirmaOzet();
   } catch(e) {}
 }
-function toggleFirma() {
-  const goster = document.getElementById('fis-firma-goster').checked;
-  document.getElementById('fis-firma-alani').style.display = goster ? '' : 'none';
-  saveFirmaInfo();
-}
-function logoYukle(e) {
-  const file = e.target.files[0]; if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (ev) => {
-    logoDataUrl = ev.target.result;
-    localStorage.setItem('biyares_logo', logoDataUrl);
-    document.getElementById('logo-preview').src = logoDataUrl;
-    document.getElementById('logo-preview').style.display = 'block';
-    document.getElementById('logo-hint').style.display = 'none';
-    document.getElementById('logo-sil-btn').style.display = 'block';
-  };
-  reader.readAsDataURL(file);
-}
-function logoSil() {
-  logoDataUrl = null;
-  localStorage.removeItem('biyares_logo');
-  document.getElementById('logo-preview').src = '';
-  document.getElementById('logo-preview').style.display = 'none';
-  document.getElementById('logo-hint').style.display = 'block';
-  document.getElementById('logo-sil-btn').style.display = 'none';
-  document.getElementById('logo-input').value = '';
+
+function updateFirmaOzet() {
+  const ozet = document.getElementById('fis-firma-ozet');
+  if (!ozet) return;
+  try {
+    const info = JSON.parse(localStorage.getItem('biyares_firma') || '{}');
+    ozet.textContent = info.adi ? '— ' + info.adi : '— Firma adı girilmedi';
+  } catch(e) {}
 }
 
 // Müşteri datalist doldur
@@ -3560,11 +3586,12 @@ async function fisOnizle() {
   const araToplam = fisUrunler.reduce((s, u) => s + (u.adet * u.birimFiyat), 0);
   const genelToplam = araToplam - indirim;
 
-  // Firma bilgileri
-  const firmaAdi = document.getElementById('fis-firma-adi').value.trim();
-  const firmaTel = document.getElementById('fis-firma-tel').value.trim();
-  const firmaAdres = document.getElementById('fis-firma-adres').value.trim();
+  // Firma bilgileri — Hesabım'dan al
   const firmaGoster = document.getElementById('fis-firma-goster').checked;
+  const firmaInfo = JSON.parse(localStorage.getItem('biyares_firma') || '{}');
+  const firmaAdi = firmaInfo.adi || '';
+  const firmaTel = firmaInfo.tel || '';
+  const firmaAdres = firmaInfo.adres || '';
 
   // Para birimi
   const paraBirimleri = fisUrunler.map(u => u.paraBirimi);
@@ -3814,6 +3841,7 @@ async function gecmisFisSil(fisNo) {
 // Sayfa açılınca firma bilgilerini yükle
 document.addEventListener('DOMContentLoaded', () => {
   loadFirmaInfo();
+  updateFirmaOzet();
   if (fisUrunler.length === 0) fisUrunEkle();
 });
 
@@ -3988,9 +4016,14 @@ function hesaplaBildirimler() {
   // Badge güncelle
   const okunmamis = bildirimler.filter(b => !b.okundu).length;
   const badge = document.getElementById('bildirim-badge');
+  const badgeMobil = document.getElementById('bildirim-badge-mobil');
   if (badge) {
     if (okunmamis > 0) { badge.style.display = 'flex'; badge.textContent = okunmamis > 9 ? '9+' : okunmamis; }
     else { badge.style.display = 'none'; }
+  }
+  if (badgeMobil) {
+    if (okunmamis > 0) { badgeMobil.style.display = 'flex'; badgeMobil.textContent = okunmamis > 9 ? '9+' : okunmamis; }
+    else { badgeMobil.style.display = 'none'; }
   }
 }
 
@@ -4280,6 +4313,19 @@ async function hesabiSil() {
     await window._currentUser.delete();
     toast('Hesap silindi', 'success');
   } catch(e) { toast('Hata: ' + e.message, 'error'); }
+}
+
+
+// ── MOBİL SİDEBAR ──
+function sidebarAc() {
+  document.querySelector('.sidebar').classList.add('open');
+  document.getElementById('sidebar-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function sidebarKapat() {
+  document.querySelector('.sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('open');
+  document.body.style.overflow = '';
 }
 
 function kargoYakinda() {
