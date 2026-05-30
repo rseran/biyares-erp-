@@ -3861,8 +3861,12 @@ function renderDashboard() {
 
   // Selamlama
   const saat = now.getHours();
-  const selam = saat < 12 ? 'Günaydın! ☀️' : saat < 18 ? 'İyi günler! 👋' : 'İyi akşamlar! 🌙';
-  document.getElementById('dash-selam').textContent = selam;
+  const selamOn = saat < 12 ? 'Günaydın' : saat < 18 ? 'İyi günler' : 'İyi akşamlar';
+  const selamEmoji = saat < 12 ? '☀️' : saat < 18 ? '👋' : '🌙';
+  const kullaniciAdi = window._currentUser?.displayName || window._currentUser?.phoneNumber || '';
+  const sadecead = kullaniciAdi.split(' ')[0];
+  const selamMesaj = sadecead ? `${selamOn}, ${sadecead}! ${selamEmoji}` : `${selamOn}! ${selamEmoji}`;
+  document.getElementById('dash-selam').textContent = selamMesaj;
 
   // Özet kartlar
   const toplamStok = DATA.urunler.reduce((s, u) => {
