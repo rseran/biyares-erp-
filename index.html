@@ -652,7 +652,7 @@ td { padding: 10px 13px; font-size: 13px; }
         <div class="login-flag">🇹🇷 +90</div>
         <input class="form-input" id="phone-input" type="tel" placeholder="532 xxx xx xx" inputmode="numeric" style="flex:1">
       </div>
-      <div class="recaptcha-wrap" id="recaptcha-container"></div>
+      <div id="recaptcha-container" style="display:none"></div>
       <div class="login-error" id="phone-error"></div>
       <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:12px" onclick="telefonKoduGonder()">
         SMS Kodu Gönder
@@ -2065,7 +2065,10 @@ async function telefonKoduGonder() {
   try {
     const { auth, RecaptchaVerifier, signInWithPhoneNumber } = window._firebase;
     if (!window._recaptchaVerifier) {
-      window._recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { size: 'normal' });
+      window._recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        size: 'invisible',
+        callback: () => {}
+      });
     }
     _confirmationResult = await signInWithPhoneNumber(auth, fullTel, window._recaptchaVerifier);
     document.getElementById('phone-step-1').style.display = 'none';
