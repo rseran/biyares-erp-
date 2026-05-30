@@ -7,6 +7,45 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+  import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, updateDoc, deleteDoc, query, where, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDkXuNCk1Ffen-mR6amW_U_r3VJnA0gRm0",
+    authDomain: "biyares-86f42.firebaseapp.com",
+    projectId: "biyares-86f42",
+    storageBucket: "biyares-86f42.firebasestorage.app",
+    messagingSenderId: "582972463775",
+    appId: "1:582972463775:web:ab4f5c0cef0a072e4b20aa",
+    measurementId: "G-E28RL7434J"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const googleProvider = new GoogleAuthProvider();
+
+  // Global olarak erişilebilir yap
+  window._firebase = { auth, db, googleProvider, RecaptchaVerifier, signInWithPhoneNumber, signInWithPopup, signOut, onAuthStateChanged, doc, setDoc, getDoc, collection, addDoc, getDocs, updateDoc, deleteDoc, query, where, orderBy };
+
+  // Auth state listener
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      window._currentUser = user;
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'flex';
+      document.getElementById('user-display').textContent = user.displayName || user.phoneNumber || 'Kullanıcı';
+      loadAllData();
+    } else {
+      window._currentUser = null;
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('app').style.display = 'none';
+    }
+  });
+</script>
 <style>
 :root {
   --bg: #f5f5f5;
@@ -510,10 +549,97 @@ td { padding: 10px 13px; font-size: 13px; }
 .ekstre-table td.green { color: #2e7d32; font-weight: 700; }
 .ekstre-toplam { text-align: right; padding: 3mm; background: #f5f5f5; border: 1px solid #ddd; }
 .ekstre-toplam-val { font-size: 14px; font-weight: 700; color: #e53935; }
+
+/* ===== GİRİŞ EKRANI ===== */
+#login-screen {
+  position: fixed; inset: 0; z-index: 9999;
+  background: #ffffff;
+  display: flex; align-items: center; justify-content: center;
+}
+.login-box {
+  width: 100%; max-width: 400px;
+  padding: 40px 36px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow: 0 8px 48px rgba(0,0,0,0.08);
+  margin: 20px;
+}
+.login-logo { text-align: center; margin-bottom: 32px; }
+.login-logo svg { width: 180px; }
+.login-title { font-size: 22px; font-weight: 800; margin-bottom: 6px; text-align: center; }
+.login-sub { font-size: 13px; color: var(--text3); text-align: center; margin-bottom: 28px; }
+.login-divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; }
+.login-divider::before, .login-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.login-divider span { font-size: 11px; color: var(--text3); font-family: var(--mono); }
+.login-phone-row { display: flex; gap: 8px; }
+.login-flag { background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius); padding: 10px 14px; font-size: 16px; white-space: nowrap; display: flex; align-items: center; gap: 6px; color: var(--text2); font-family: var(--mono); font-size: 13px; }
+.login-error { color: var(--red); font-size: 12px; margin-top: 8px; display: none; font-family: var(--mono); }
+.btn-google { width: 100%; padding: 12px; border-radius: var(--radius); border: 1px solid var(--border2); background: #fff; cursor: pointer; font-family: var(--font); font-size: 14px; font-weight: 600; color: var(--text); display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.15s; }
+.btn-google:hover { background: var(--surface2); }
+.recaptcha-wrap { margin: 12px 0; display: flex; justify-content: center; }
 </style>
 </head>
 <body>
-<div class="app">
+
+<!-- ===== GİRİŞ EKRANI ===== -->
+<div id="login-screen" style="display:flex">
+  <div class="login-box">
+    <div class="login-logo">
+      <svg width="160" viewBox="0 0 400 80" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="0" width="72" height="72" rx="16" fill="#ff8c00"/>
+        <rect x="14" y="12" width="24" height="14" rx="7" fill="#fff"/>
+        <rect x="14" y="30" width="21" height="12" rx="6" fill="#fff"/>
+        <rect x="14" y="46" width="17" height="12" rx="6" fill="#fff"/>
+        <rect x="42" y="12" width="22" height="20" rx="10" fill="#fff"/>
+        <polygon points="44,35 53,35 64,72 55,72" fill="#fff"/>
+        <text x="86" y="50" style="font-family:Syne,sans-serif;font-weight:800;font-size:42px;fill:#ff8c00;letter-spacing:-1px">biyares</text>
+        <text x="87" y="68" style="font-family:Syne,sans-serif;font-weight:400;font-size:10px;fill:#aaa;letter-spacing:3px">COMMERCE. ENGINEERED.</text>
+      </svg>
+    </div>
+
+    <div class="login-title">Hoş Geldiniz</div>
+    <div class="login-sub">Hesabınıza giriş yapın</div>
+
+    <!-- Google ile Giriş -->
+    <button class="btn-google" onclick="googleIleGiris()">
+      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg>
+      Google ile Giriş Yap
+    </button>
+
+    <div class="login-divider"><span>veya</span></div>
+
+    <!-- Telefon ile Giriş -->
+    <div id="phone-step-1">
+      <div class="login-phone-row">
+        <div class="login-flag">🇹🇷 +90</div>
+        <input class="form-input" id="phone-input" type="tel" placeholder="532 xxx xx xx" inputmode="numeric" style="flex:1">
+      </div>
+      <div class="recaptcha-wrap" id="recaptcha-container"></div>
+      <div class="login-error" id="phone-error"></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:12px" onclick="telefonKoduGonder()">
+        SMS Kodu Gönder
+      </button>
+    </div>
+
+    <div id="phone-step-2" style="display:none">
+      <div style="font-size:13px;color:var(--text2);margin-bottom:12px;text-align:center" id="sms-sent-label">
+        SMS kodu gönderildi
+      </div>
+      <input class="form-input" id="sms-code-input" type="number" placeholder="6 haneli kod" inputmode="numeric" style="text-align:center;font-size:20px;letter-spacing:8px;font-family:var(--mono)">
+      <div class="login-error" id="sms-error"></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:12px" onclick="smsKoduDogrula()">
+        Giriş Yap
+      </button>
+      <button class="btn btn-ghost" style="width:100%;justify-content:center;margin-top:8px" onclick="document.getElementById('phone-step-1').style.display='block';document.getElementById('phone-step-2').style.display='none'">
+        ← Geri
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<div class="app" id="app" style="display:none">
 
 <!-- SIDEBAR -->
 <aside class="sidebar">
@@ -524,10 +650,39 @@ td { padding: 10px 13px; font-size: 13px; }
       @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;800&amp;display=swap');
       .bl { font-family: "Syne", sans-serif; font-weight: 800; }
       .sl { font-family: "Syne", sans-serif; font-weight: 400; }
-    </style>
+    
+/* ===== GİRİŞ EKRANI ===== */
+#login-screen {
+  position: fixed; inset: 0; z-index: 9999;
+  background: #ffffff;
+  display: flex; align-items: center; justify-content: center;
+}
+.login-box {
+  width: 100%; max-width: 400px;
+  padding: 40px 36px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow: 0 8px 48px rgba(0,0,0,0.08);
+  margin: 20px;
+}
+.login-logo { text-align: center; margin-bottom: 32px; }
+.login-logo svg { width: 180px; }
+.login-title { font-size: 22px; font-weight: 800; margin-bottom: 6px; text-align: center; }
+.login-sub { font-size: 13px; color: var(--text3); text-align: center; margin-bottom: 28px; }
+.login-divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; }
+.login-divider::before, .login-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.login-divider span { font-size: 11px; color: var(--text3); font-family: var(--mono); }
+.login-phone-row { display: flex; gap: 8px; }
+.login-flag { background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius); padding: 10px 14px; font-size: 16px; white-space: nowrap; display: flex; align-items: center; gap: 6px; color: var(--text2); font-family: var(--mono); font-size: 13px; }
+.login-error { color: var(--red); font-size: 12px; margin-top: 8px; display: none; font-family: var(--mono); }
+.btn-google { width: 100%; padding: 12px; border-radius: var(--radius); border: 1px solid var(--border2); background: #fff; cursor: pointer; font-family: var(--font); font-size: 14px; font-weight: 600; color: var(--text); display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.15s; }
+.btn-google:hover { background: var(--surface2); }
+.recaptcha-wrap { margin: 12px 0; display: flex; justify-content: center; }
+</style>
   </defs>
   <!-- Simge zemini -->
-  <rect x="0" y="1" width="38" height="38" rx="8" fill="#9b3a10"/>
+  <rect x="0" y="1" width="38" height="38" rx="8" fill="#ff8c00"/>
   <!-- B harfi negatif boşluklar -->
   <rect x="6" y="7" width="13" height="7" rx="3.5" fill="#f0ece8"/>
   <rect x="6" y="17" width="11" height="6.5" rx="3.2" fill="#f0ece8"/>
@@ -536,7 +691,7 @@ td { padding: 10px 13px; font-size: 13px; }
   <rect x="21" y="7" width="12" height="11" rx="5.5" fill="#f0ece8"/>
   <polygon points="22,20 27,20 34,38 29,38" fill="#f0ece8"/>
   <!-- biyares yazısı -->
-  <text x="44" y="27" class="bl" font-size="18" fill="#9b3a10" letter-spacing="-0.5">biyares</text>
+  <text x="44" y="27" class="bl" font-size="18" fill="#ff8c00" letter-spacing="-0.5">biyares</text>
   <!-- Slogan -->
   <text x="44" y="37" class="sl" font-size="4" fill="#aaa" letter-spacing="1.5">COMMERCE. ENGINEERED.</text>
 </svg>
@@ -628,6 +783,14 @@ td { padding: 10px 13px; font-size: 13px; }
 
   </nav>
   <div class="sidebar-footer">
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 4px;margin-bottom:8px;border-bottom:1px solid var(--border);padding-bottom:12px">
+      <div style="width:32px;height:32px;border-radius:50%;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-size:14px">👤</div>
+      <div style="flex:1;overflow:hidden">
+        <div id="user-display" style="font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</div>
+        <div style="font-size:10px;color:var(--text3);font-family:var(--mono)">biyares</div>
+      </div>
+      <button onclick="cikisYap()" title="Çıkış Yap" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:14px;padding:4px">🚪</button>
+    </div>
     <button class="btn btn-ghost" style="width:100%;justify-content:center;margin-bottom:8px;position:relative" onclick="showPage('bildirimler')">
       <div class="bildirim-btn-wrap">
         🔔 Bildirimler
@@ -1552,6 +1715,67 @@ async function postAction(payload) {
   const json = await res.json();
   if (json.status!=='ok') throw new Error(json.message);
   return json;
+}
+
+
+// ══════════════════════════════════════
+//  FİREBASE AUTH
+// ══════════════════════════════════════
+let _confirmationResult = null;
+
+async function googleIleGiris() {
+  try {
+    const { auth, googleProvider, signInWithPopup } = window._firebase;
+    await signInWithPopup(auth, googleProvider);
+  } catch(e) {
+    toast('Giriş başarısız: ' + e.message, 'error');
+  }
+}
+
+async function telefonKoduGonder() {
+  const tel = document.getElementById('phone-input').value.trim().replace(/\s/g,'');
+  if (!tel || tel.length < 10) {
+    showLoginError('phone-error', 'Geçerli bir telefon numarası girin');
+    return;
+  }
+  const fullTel = '+90' + tel;
+  try {
+    const { auth, RecaptchaVerifier, signInWithPhoneNumber } = window._firebase;
+    if (!window._recaptchaVerifier) {
+      window._recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { size: 'normal' });
+    }
+    _confirmationResult = await signInWithPhoneNumber(auth, fullTel, window._recaptchaVerifier);
+    document.getElementById('phone-step-1').style.display = 'none';
+    document.getElementById('phone-step-2').style.display = 'block';
+    document.getElementById('sms-sent-label').textContent = fullTel + ' numarasına SMS kodu gönderildi';
+  } catch(e) {
+    showLoginError('phone-error', 'Hata: ' + e.message);
+  }
+}
+
+async function smsKoduDogrula() {
+  const kod = document.getElementById('sms-code-input').value.trim();
+  if (!kod || kod.length !== 6) {
+    showLoginError('sms-error', '6 haneli kodu girin');
+    return;
+  }
+  try {
+    await _confirmationResult.confirm(kod);
+  } catch(e) {
+    showLoginError('sms-error', 'Kod hatalı, tekrar deneyin');
+  }
+}
+
+async function cikisYap() {
+  if (!confirm('Çıkış yapmak istediğinizden emin misiniz?')) return;
+  const { auth, signOut } = window._firebase;
+  await signOut(auth);
+  toast('Çıkış yapıldı', 'success');
+}
+
+function showLoginError(id, msg) {
+  const el = document.getElementById(id);
+  if (el) { el.textContent = msg; el.style.display = 'block'; }
 }
 
 // ── YÜKLE ──
